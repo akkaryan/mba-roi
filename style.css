@@ -127,6 +127,7 @@ body {
   flex-direction: column;
   gap: 14px;
   height: 100%;
+  min-height: 0;
   overflow-y: auto;
   padding-right: 4px;
   padding-bottom: 24px;
@@ -135,7 +136,7 @@ body {
 .inputs-panel::-webkit-scrollbar-track { background: transparent; }
 .inputs-panel::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
 @media (max-width: 900px) {
-  .inputs-panel { height: auto; overflow: visible; padding-bottom: 0; }
+  .inputs-panel { height: auto; overflow: visible; padding-bottom: 0; min-height: auto; }
 }
 
 /* ─── Card ─── */
@@ -253,6 +254,7 @@ input[type="text"]::placeholder { color: var(--text3); }
   flex-direction: column;
   gap: 16px;
   height: 100%;
+  min-height: 0;
   overflow-y: auto;
   padding-right: 4px;
   padding-bottom: 24px;
@@ -261,7 +263,7 @@ input[type="text"]::placeholder { color: var(--text3); }
 .results-panel::-webkit-scrollbar-track { background: transparent; }
 .results-panel::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
 @media (max-width: 900px) {
-  .results-panel { height: auto; overflow: visible; padding-bottom: 0; }
+  .results-panel { height: auto; overflow: visible; padding-bottom: 0; min-height: auto; }
 }
 
 /* ─── Metric cards ─── */
