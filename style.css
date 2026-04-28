@@ -1,0 +1,367 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #F3F4F6;
+  --surface: #FFFFFF;
+  --surface2: #F9FAFB;
+  --border: #E5E7EB;
+  --border2: #D1D5DB;
+  --text: #111827;
+  --text2: #6B7280;
+  --text3: #9CA3AF;
+  --blue: #2563EB;
+  --green: #059669;
+  --red: #EF4444;
+  --amber: #D97706;
+  --purple: #7C3AED;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.05);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111827;
+    --surface: #1F2937;
+    --surface2: #374151;
+    --border: #374151;
+    --border2: #4B5563;
+    --text: #F9FAFB;
+    --text2: #9CA3AF;
+    --text3: #6B7280;
+    --shadow: 0 1px 3px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.3);
+  }
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ─── Header ─── */
+.header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+.logo-mark {
+  width: 34px; height: 34px;
+  background: var(--blue);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+}
+.logo-mark svg { width: 18px; height: 18px; }
+.logo-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+.header-sub {
+  font-size: 13px;
+  color: var(--text2);
+  margin-left: 4px;
+}
+.header-sep { flex: 1; }
+.header-badge {
+  font-size: 11px;
+  background: #EFF6FF;
+  color: var(--blue);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+@media (prefers-color-scheme: dark) {
+  .header-badge { background: #1E3A5F; color: #93C5FD; }
+}
+
+/* ─── Layout ─── */
+.main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .main { grid-template-columns: 1fr; padding: 16px; }
+}
+
+/* ─── Inputs Panel ─── */
+.inputs-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: sticky;
+  top: 68px;
+  max-height: calc(100vh - 90px);
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.inputs-panel::-webkit-scrollbar { width: 4px; }
+.inputs-panel::-webkit-scrollbar-track { background: transparent; }
+.inputs-panel::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+@media (max-width: 900px) {
+  .inputs-panel { position: static; max-height: none; overflow: visible; }
+}
+
+/* ─── Card ─── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.card-header {
+  padding: 14px 16px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.card-icon {
+  width: 28px; height: 28px;
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+.card-body { padding: 14px 16px; }
+
+/* ─── Scenario tabs ─── */
+.sc-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+}
+.sc-tab {
+  flex: 1;
+  padding: 10px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: var(--text2);
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+.sc-tab.active { color: var(--text); border-bottom-color: currentColor; }
+.sc-tab:hover { color: var(--text); background: var(--surface2); }
+
+.sc-panel { display: none; padding: 14px 16px; }
+.sc-panel.active { display: block; }
+
+/* ─── Fields ─── */
+.field-group { display: flex; flex-direction: column; gap: 10px; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+input[type="text"],
+input[type="number"] {
+  height: 36px;
+  padding: 0 10px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+}
+input[type="text"]:focus,
+input[type="number"]:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+}
+input[type="text"]::placeholder { color: var(--text3); }
+
+.field-hint {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+
+/* ─── Results Panel ─── */
+.results-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ─── Metric cards ─── */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+@media (max-width: 700px) {
+  .metrics-grid { grid-template-columns: 1fr; }
+}
+.metric-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  box-shadow: var(--shadow);
+}
+.mc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+.mc-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+.mc-emi {
+  font-size: 11px;
+  color: var(--text2);
+  background: var(--surface2);
+  padding: 2px 7px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+}
+.mc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.mc-item { display: flex; flex-direction: column; gap: 2px; }
+.mc-key { font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text3); font-weight: 500; }
+.mc-val { font-size: 14px; font-weight: 600; color: var(--text); }
+.mc-val.neg { color: var(--red); }
+
+/* ─── Chart cards ─── */
+.chart-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+}
+.chart-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.chart-sub {
+  font-size: 11px;
+  color: var(--text2);
+  margin-bottom: 14px;
+}
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.leg {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text2);
+}
+.leg-line {
+  width: 20px; height: 2.5px;
+  border-radius: 2px;
+}
+.leg-line.thin { height: 1.5px; }
+
+.chart-wrap { position: relative; width: 100%; }
+.chart-wrap canvas { display: block; }
+
+/* ─── Flow scenario selector ─── */
+.flow-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.flow-btns { display: flex; gap: 6px; }
+.flow-btn {
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.flow-btn:hover { border-color: var(--border2); color: var(--text); }
+.flow-btn.active { font-weight: 600; }
+
+/* ─── Section divider ─── */
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px 10px;
+}
+.divider-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text3);
+  white-space: nowrap;
+}
+.divider-line { flex: 1; height: 1px; background: var(--border); }
+
+/* ─── Footer ─── */
+.footer {
+  text-align: center;
+  padding: 24px;
+  font-size: 12px;
+  color: var(--text3);
+}
+.footer a { color: var(--text2); text-decoration: none; }
+.footer a:hover { color: var(--text); }

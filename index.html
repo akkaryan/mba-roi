@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MBA ROI Calculator</title>
+  <meta name="description" content="Project your post-MBA net worth, investment corpus, and career cashflow across multiple salary scenarios.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2 13L6 8L9 11L12 6L16 10" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="16" cy="10" r="1.5" fill="white"/>
+        </svg>
+      </div>
+      <span class="logo-text">MBA ROI Calculator</span>
+    </div>
+    <p class="header-sub">Project your post-MBA wealth journey</p>
+    <div class="header-sep"></div>
+    <span class="header-badge">All savings → MF @ 10%</span>
+  </div>
+</header>
+
+<!-- Main -->
+<main class="main">
+
+  <!-- ── LEFT: Inputs ── -->
+  <div class="inputs-panel">
+
+    <!-- Programme Details -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#EFF6FF;">🎓</div>
+        <span class="card-title">Programme details</span>
+      </div>
+      <div class="card-body">
+        <div class="field-group">
+          <div class="field-row">
+            <div class="field">
+              <label>Total fees (₹L)</label>
+              <input type="number" id="totalFees" value="26" min="1" max="200" step="0.5" placeholder="26">
+            </div>
+            <div class="field">
+              <label>Loan amount (₹L)</label>
+              <input type="number" id="loanAmount" value="35" min="1" max="200" step="0.5" placeholder="35">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Interest rate (% p.a.)</label>
+              <input type="number" id="loanRate" value="7" min="1" max="20" step="0.1" placeholder="7">
+            </div>
+            <div class="field">
+              <label>Duration (years)</label>
+              <input type="number" id="mbaDuration" value="2" min="1" max="4" step="1" placeholder="2">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Current Finances -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#F0FDF4;">💰</div>
+        <span class="card-title">Current finances</span>
+      </div>
+      <div class="card-body">
+        <div class="field-group">
+          <div class="field-row">
+            <div class="field">
+              <label>Investments (₹L)</label>
+              <input type="number" id="currentInv" value="0" min="0" max="500" step="0.5" placeholder="0">
+              <span class="field-hint">Stocks, MF, bonds</span>
+            </div>
+            <div class="field">
+              <label>Cash savings (₹L)</label>
+              <input type="number" id="cashSavings" value="5" min="0" max="200" step="0.5" placeholder="5">
+            </div>
+          </div>
+          <div class="field">
+            <label>Monthly spend during MBA (₹k)</label>
+            <input type="number" id="mbaMonthly" value="15" min="0" max="200" step="1" placeholder="15">
+            <span class="field-hint">Living expenses, subscriptions, etc.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shared Assumptions -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#F5F3FF;">⚙️</div>
+        <span class="card-title">Shared assumptions</span>
+      </div>
+      <div class="card-body">
+        <div class="field-group">
+          <div class="field-row">
+            <div class="field">
+              <label>MF return (% p.a.)</label>
+              <input type="number" id="mfReturn" value="10" min="1" max="25" step="0.5" placeholder="10">
+            </div>
+            <div class="field">
+              <label>Repayment (years)</label>
+              <input type="number" id="repayYears" value="7" min="1" max="15" step="1" placeholder="7">
+            </div>
+          </div>
+          <div class="field">
+            <label>Expense growth (% p.a.)</label>
+            <input type="number" id="expGrowth" value="6" min="0" max="15" step="0.5" placeholder="6">
+            <span class="field-hint">Lifestyle inflation applied to all scenarios</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scenario Inputs -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#FFF7ED;">📊</div>
+        <span class="card-title">Career scenarios</span>
+      </div>
+      <div class="sc-tabs">
+        <button class="sc-tab active" onclick="showTab(0, this)" style="border-bottom-color:#2563EB;color:#2563EB;">Scenario 1</button>
+        <button class="sc-tab" onclick="showTab(1, this)">Scenario 2</button>
+        <button class="sc-tab" onclick="showTab(2, this)">Scenario 3</button>
+      </div>
+
+      <!-- Scenario 1 -->
+      <div class="sc-panel active" id="scPanel0">
+        <div class="field-group">
+          <div class="field">
+            <label>Label</label>
+            <input type="text" id="sc1Label" value="Conservative" placeholder="e.g. Conservative">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Starting CTC (LPA)</label>
+              <input type="number" id="sc1CTC" value="28" min="1" max="500" step="0.5">
+            </div>
+            <div class="field">
+              <label>In-hand (% of CTC)</label>
+              <input type="number" id="sc1Inhand" value="72" min="50" max="95" step="1">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Salary growth (% p.a.)</label>
+              <input type="number" id="sc1Growth" value="8" min="0" max="30" step="0.5">
+            </div>
+            <div class="field">
+              <label>Starting expenses (₹k/mo)</label>
+              <input type="number" id="sc1Exp" value="65" min="10" max="500" step="1">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scenario 2 -->
+      <div class="sc-panel" id="scPanel1">
+        <div class="field-group">
+          <div class="field">
+            <label>Label</label>
+            <input type="text" id="sc2Label" value="Moderate" placeholder="e.g. Moderate">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Starting CTC (LPA)</label>
+              <input type="number" id="sc2CTC" value="35" min="1" max="500" step="0.5">
+            </div>
+            <div class="field">
+              <label>In-hand (% of CTC)</label>
+              <input type="number" id="sc2Inhand" value="73" min="50" max="95" step="1">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Salary growth (% p.a.)</label>
+              <input type="number" id="sc2Growth" value="10" min="0" max="30" step="0.5">
+            </div>
+            <div class="field">
+              <label>Starting expenses (₹k/mo)</label>
+              <input type="number" id="sc2Exp" value="75" min="10" max="500" step="1">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scenario 3 -->
+      <div class="sc-panel" id="scPanel2">
+        <div class="field-group">
+          <div class="field">
+            <label>Label</label>
+            <input type="text" id="sc3Label" value="Aggressive" placeholder="e.g. Aggressive">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Starting CTC (LPA)</label>
+              <input type="number" id="sc3CTC" value="50" min="1" max="500" step="0.5">
+            </div>
+            <div class="field">
+              <label>In-hand (% of CTC)</label>
+              <input type="number" id="sc3Inhand" value="74" min="50" max="95" step="1">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Salary growth (% p.a.)</label>
+              <input type="number" id="sc3Growth" value="12" min="0" max="30" step="0.5">
+            </div>
+            <div class="field">
+              <label>Starting expenses (₹k/mo)</label>
+              <input type="number" id="sc3Exp" value="90" min="10" max="500" step="1">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- end inputs panel -->
+
+  <!-- ── RIGHT: Results ── -->
+  <div class="results-panel">
+
+    <!-- Metric Cards -->
+    <div id="metricCards" class="metrics-grid"></div>
+
+    <!-- Wealth Chart -->
+    <div class="chart-card">
+      <div class="chart-title">Investment corpus &amp; net worth trajectory</div>
+      <div class="chart-sub">Shaded band = MBA period · Faint lines = MF corpus · Bold lines = net worth · Red = loan outstanding</div>
+      <div class="chart-legend">
+        <span class="leg"><span class="leg-line" style="background:#2563EB;"></span>NW · Sc 1</span>
+        <span class="leg"><span class="leg-line" style="background:#059669;"></span>NW · Sc 2</span>
+        <span class="leg"><span class="leg-line" style="background:#7C3AED;"></span>NW · Sc 3</span>
+        <span class="leg"><span class="leg-line thin" style="background:#93C5FD;"></span>Corpus · Sc 1</span>
+        <span class="leg"><span class="leg-line thin" style="background:#6EE7B7;"></span>Corpus · Sc 2</span>
+        <span class="leg"><span class="leg-line thin" style="background:#C4B5FD;"></span>Corpus · Sc 3</span>
+        <span class="leg"><span class="leg-line" style="background:#EF4444;"></span>Loan</span>
+      </div>
+      <div class="chart-wrap" style="height:380px;">
+        <canvas id="wealthChart" role="img" aria-label="Investment corpus and net worth trajectory across three scenarios over 13 years.">Net worth and corpus projection chart from current year to 13 years ahead.</canvas>
+      </div>
+    </div>
+
+    <!-- Cashflow Chart -->
+    <div class="chart-card">
+      <div class="flow-header">
+        <div>
+          <div class="chart-title">Annual cashflow — <span id="flowScenLabel">Scenario 1</span></div>
+          <div class="chart-sub">Net savings go into MF corpus each year · Expenses grow at set rate</div>
+        </div>
+        <div class="flow-btns">
+          <button class="flow-btn active" id="flowBtn0" onclick="setScen(0)" style="border-color:#2563EB;color:#2563EB;background:#2563EB12;">Sc 1</button>
+          <button class="flow-btn" id="flowBtn1" onclick="setScen(1)">Sc 2</button>
+          <button class="flow-btn" id="flowBtn2" onclick="setScen(2)">Sc 3</button>
+        </div>
+      </div>
+      <div class="chart-legend">
+        <span class="leg"><span class="leg-line" style="background:#059669;"></span>Salary in-hand</span>
+        <span class="leg"><span class="leg-line" style="background:#EF4444;"></span>Total expenses</span>
+        <span class="leg"><span class="leg-line" style="background:#D97706;"></span>Loan EMI</span>
+        <span class="leg"><span class="leg-line" style="background:#2563EB;"></span>Net savings → MF</span>
+      </div>
+      <div class="chart-wrap" style="height:300px;">
+        <canvas id="flowChart" role="img" aria-label="Annual cashflow showing salary, expenses, EMI and savings for selected scenario.">Annual cashflow breakdown for the selected scenario.</canvas>
+      </div>
+    </div>
+
+  </div>
+  <!-- end results panel -->
+
+</main>
+
+<footer class="footer">
+  Built for MBA peers · Numbers are projections, not financial advice ·
+  <a href="https://github.com" target="_blank">Open source</a>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="js/simulate.js"></script>
+<script src="js/app.js"></script>
+<script>
+  function showTab(idx, btn) {
+    document.querySelectorAll('.sc-tab').forEach((t, i) => {
+      t.classList.toggle('active', i === idx);
+      t.style.borderBottomColor = i === idx ? ['#2563EB','#059669','#7C3AED'][i] : 'transparent';
+      t.style.color = i === idx ? ['#2563EB','#059669','#7C3AED'][i] : '';
+    });
+    document.querySelectorAll('.sc-panel').forEach((p, i) => p.classList.toggle('active', i === idx));
+  }
+</script>
+</body>
+</html>

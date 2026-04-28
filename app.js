@@ -1,0 +1,216 @@
+const SCENARIO_DEFAULTS = [
+  { label: 'Conservative', startingCTC: 28, inhandPct: 72, salaryGrowthPct: 8,  baseExpL: 0.065, color: '#2563EB', corpColor: '#93C5FD' },
+  { label: 'Moderate',     startingCTC: 35, inhandPct: 73, salaryGrowthPct: 10, baseExpL: 0.075, color: '#059669', corpColor: '#6EE7B7' },
+  { label: 'Aggressive',   startingCTC: 50, inhandPct: 74, salaryGrowthPct: 12, baseExpL: 0.090, color: '#7C3AED', corpColor: '#C4B5FD' },
+];
+
+let wChart = null, fChart = null, activeScen = 0, lastResults = null;
+
+function num(id) { return parseFloat(document.getElementById(id).value) || 0; }
+function str(id) { return document.getElementById(id).value.trim(); }
+
+function getInputs() {
+  return {
+    loanL:        num('loanAmount'),
+    loanRatePct:  num('loanRate'),
+    mbaDuration:  num('mbaDuration'),
+    currentInvL:  num('currentInv'),
+    cashL:        num('cashSavings'),
+    mbaMonthlyL:  num('mbaMonthly') / 100,
+    mfReturnPct:  num('mfReturn'),
+    repayYears:   num('repayYears'),
+    expGrowthPct: num('expGrowth'),
+    startYear:    new Date().getFullYear(),
+  };
+}
+
+function getScenarios() {
+  return [1, 2, 3].map((n, i) => ({
+    label:          str(`sc${n}Label`) || SCENARIO_DEFAULTS[i].label,
+    startingCTC:    num(`sc${n}CTC`),
+    inhandPct:      num(`sc${n}Inhand`),
+    salaryGrowthPct:num(`sc${n}Growth`),
+    baseExpL:       num(`sc${n}Exp`) / 100,
+    color:          SCENARIO_DEFAULTS[i].color,
+    corpColor:      SCENARIO_DEFAULTS[i].corpColor,
+  }));
+}
+
+function dark() { return window.matchMedia('(prefers-color-scheme: dark)').matches; }
+
+function cDef() {
+  const d = dark();
+  return {
+    gc: d ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)',
+    tc: d ? 'rgba(255,255,255,0.5)'  : 'rgba(0,0,0,0.45)',
+    tt: {
+      backgroundColor: d ? '#1F2937' : '#fff',
+      titleColor:      d ? '#F9FAFB' : '#111827',
+      bodyColor:       d ? 'rgba(249,250,251,0.7)' : 'rgba(17,24,39,0.65)',
+      borderColor:     d ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
+      borderWidth: 1, padding: 10, cornerRadius: 8,
+    }
+  };
+}
+
+const shadePl = {
+  id: 'shade',
+  beforeDraw(c) {
+    const { ctx, chartArea: { top, bottom }, scales: { x } } = c;
+    const inputs = getInputs();
+    const x0 = x.getPixelForValue(0);
+    const x1 = x.getPixelForValue(inputs.mbaDuration);
+    ctx.save();
+    ctx.fillStyle = dark() ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)';
+    ctx.fillRect(x0, top, x1 - x0, bottom - top);
+    ctx.restore();
+  }
+};
+
+function renderWealthChart(results, labels) {
+  const { gc, tc, tt } = cDef();
+  const datasets = [
+    ...results.map(r => ({
+      label: 'Corpus · ' + r.label, data: r.corpArr,
+      borderColor: r.corpColor, backgroundColor: 'transparent',
+      borderWidth: 1.5, pointRadius: 0, tension: 0.4, order: 2
+    })),
+    ...results.map(r => ({
+      label: 'Net worth · ' + r.label, data: r.nwArr,
+      borderColor: r.color, backgroundColor: 'transparent',
+      borderWidth: 2.5, pointRadius: ctx => [0, getInputs().mbaDuration, 12].includes(ctx.dataIndex) ? 4 : 2,
+      pointBackgroundColor: r.color, tension: 0.4, order: 1
+    })),
+    {
+      label: 'Loan outstanding', data: results[0].loanArr,
+      borderColor: '#EF4444', backgroundColor: 'transparent',
+      borderWidth: 2, pointRadius: 2, pointBackgroundColor: '#EF4444', tension: 0.35, order: 1
+    }
+  ];
+  if (wChart) wChart.destroy();
+  wChart = new Chart(document.getElementById('wealthChart'), {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: { ...tt, callbacks: {
+          title: a => String(a[0].label),
+          label: c => ` ${c.dataset.label}: ₹${c.parsed.y.toFixed(1)}L`
+        }}
+      },
+      scales: {
+        x: { ticks: { color: tc, font: { size: 11 }, autoSkip: false, maxRotation: 0 }, grid: { color: gc }, border: { display: false } },
+        y: { ticks: { color: tc, font: { size: 11 }, callback: v => '₹' + v + 'L' }, grid: { color: gc }, border: { display: false } }
+      }
+    },
+    plugins: [shadePl]
+  });
+}
+
+function renderFlowChart(results, labels) {
+  const r = results[activeScen];
+  const { gc, tc, tt } = cDef();
+  const datasets = [
+    { label: 'Salary in-hand',  data: r.salA, borderColor: '#059669', backgroundColor: 'transparent', borderWidth: 2.5, pointRadius: 2, pointBackgroundColor: '#059669', tension: 0.35 },
+    { label: 'Total expenses',  data: r.expA, borderColor: '#EF4444', backgroundColor: 'transparent', borderWidth: 2.5, pointRadius: 2, pointBackgroundColor: '#EF4444', tension: 0.35 },
+    { label: 'Loan EMI',        data: r.emiA, borderColor: '#D97706', backgroundColor: 'transparent', borderWidth: 2.5, pointRadius: 2, pointBackgroundColor: '#D97706', tension: 0.35 },
+    { label: 'Net savings → MF',data: r.savA, borderColor: '#2563EB', backgroundColor: 'transparent', borderWidth: 2.5, pointRadius: 2, pointBackgroundColor: '#2563EB', tension: 0.35 },
+  ];
+  if (fChart) fChart.destroy();
+  fChart = new Chart(document.getElementById('flowChart'), {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: { ...tt, callbacks: {
+          title: a => String(a[0].label),
+          label: c => ` ${c.dataset.label}: ₹${c.parsed.y.toFixed(1)}L/yr`
+        }}
+      },
+      scales: {
+        x: { ticks: { color: tc, font: { size: 11 }, autoSkip: false, maxRotation: 0 }, grid: { color: gc }, border: { display: false } },
+        y: { ticks: { color: tc, font: { size: 11 }, callback: v => '₹' + v + 'L' }, grid: { color: gc }, border: { display: false }, min: 0 }
+      }
+    },
+    plugins: [shadePl]
+  });
+}
+
+function renderMetrics(results) {
+  const el = document.getElementById('metricCards');
+  const COLORS = ['#2563EB', '#059669', '#7C3AED'];
+  el.innerHTML = results.map((r, i) => `
+    <div class="metric-card" style="--accent:${COLORS[i]}">
+      <div class="mc-header">
+        <span class="mc-label">${r.label}</span>
+        <span class="mc-emi">EMI ₹${(r.emi * 100000 / 1000).toFixed(1)}k/mo</span>
+      </div>
+      <div class="mc-grid">
+        <div class="mc-item">
+          <span class="mc-key">At graduation</span>
+          <span class="mc-val ${r.nwAtGrad < 0 ? 'neg' : ''}">${r.nwAtGrad < 0 ? '–' : ''}₹${Math.abs(r.nwAtGrad).toFixed(1)}L</span>
+        </div>
+        <div class="mc-item">
+          <span class="mc-key">5yr post-MBA</span>
+          <span class="mc-val">₹${r.nw5yr.toFixed(1)}L</span>
+        </div>
+        <div class="mc-item">
+          <span class="mc-key">10yr corpus</span>
+          <span class="mc-val">₹${r.corp10yr.toFixed(1)}L</span>
+        </div>
+        <div class="mc-item">
+          <span class="mc-key">Loan cleared</span>
+          <span class="mc-val">${r.cleared}</span>
+        </div>
+        <div class="mc-item">
+          <span class="mc-key">Break-even</span>
+          <span class="mc-val">${r.breakEvenYear || '—'}</span>
+        </div>
+        <div class="mc-item">
+          <span class="mc-key">Interest cost</span>
+          <span class="mc-val">₹${r.totalInterest.toFixed(1)}L</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function setScen(i) {
+  activeScen = i;
+  [0, 1, 2].forEach(j => {
+    const btn = document.getElementById('flowBtn' + j);
+    btn.className = 'flow-btn' + (j === i ? ' active' : '');
+    btn.style.borderColor = j === i ? SCENARIO_DEFAULTS[j].color : '';
+    btn.style.color = j === i ? SCENARIO_DEFAULTS[j].color : '';
+    btn.style.background = j === i ? (SCENARIO_DEFAULTS[j].color + '12') : '';
+  });
+  document.getElementById('flowScenLabel').textContent = getScenarios()[i].label;
+  if (lastResults) renderFlowChart(lastResults, getLabels(new Date().getFullYear(), 14));
+}
+
+function render() {
+  const inputs = getInputs();
+  const scenarios = getScenarios();
+  const labels = getLabels(inputs.startYear, 14);
+  const results = scenarios.map(s => simulate(inputs, s));
+  lastResults = results;
+  renderWealthChart(results, labels);
+  renderFlowChart(results, labels);
+  renderMetrics(results);
+}
+
+function debounce(fn, ms) {
+  let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const debouncedRender = debounce(render, 250);
+  document.querySelectorAll('input').forEach(el => el.addEventListener('input', debouncedRender));
+  render();
+});
