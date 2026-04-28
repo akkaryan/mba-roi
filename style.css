@@ -35,7 +35,7 @@
   }
 }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; height: 100%; overflow: hidden; }
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -43,7 +43,8 @@ body {
   color: var(--text);
   font-size: 14px;
   line-height: 1.6;
-  min-height: 100vh;
+  height: 100%;
+  overflow: hidden;
 }
 
 /* ─── Header ─── */
@@ -103,13 +104,21 @@ body {
   max-width: 1400px;
   margin: 0 auto;
   padding: 24px;
+  padding-bottom: 0;
   display: grid;
   grid-template-columns: 380px 1fr;
   gap: 20px;
-  align-items: start;
+  height: calc(100vh - 63px);
+  overflow: hidden;
 }
 @media (max-width: 900px) {
-  .main { grid-template-columns: 1fr; padding: 16px; }
+  .main { 
+    grid-template-columns: 1fr; 
+    padding: 16px; 
+    height: auto; 
+    overflow: visible; 
+  }
+  html, body { height: auto; overflow: visible; }
 }
 
 /* ─── Inputs Panel ─── */
@@ -117,17 +126,16 @@ body {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  position: sticky;
-  top: 68px;
-  max-height: calc(100vh - 90px);
+  height: 100%;
   overflow-y: auto;
   padding-right: 4px;
+  padding-bottom: 24px;
 }
 .inputs-panel::-webkit-scrollbar { width: 4px; }
 .inputs-panel::-webkit-scrollbar-track { background: transparent; }
 .inputs-panel::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
 @media (max-width: 900px) {
-  .inputs-panel { position: static; max-height: none; overflow: visible; }
+  .inputs-panel { height: auto; overflow: visible; padding-bottom: 0; }
 }
 
 /* ─── Card ─── */
@@ -221,11 +229,39 @@ input[type="text"]::placeholder { color: var(--text3); }
   margin-top: 2px;
 }
 
+.reset-btn {
+  margin-top: 8px;
+  padding: 10px;
+  background: transparent;
+  border: 1px dashed var(--border2);
+  border-radius: var(--radius-sm);
+  color: var(--text2);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.reset-btn:hover {
+  background: var(--surface2);
+  color: var(--text);
+  border-style: solid;
+}
+
 /* ─── Results Panel ─── */
 .results-panel {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  height: 100%;
+  overflow-y: auto;
+  padding-right: 4px;
+  padding-bottom: 24px;
+}
+.results-panel::-webkit-scrollbar { width: 4px; }
+.results-panel::-webkit-scrollbar-track { background: transparent; }
+.results-panel::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+@media (max-width: 900px) {
+  .results-panel { height: auto; overflow: visible; padding-bottom: 0; }
 }
 
 /* ─── Metric cards ─── */

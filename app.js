@@ -9,6 +9,34 @@ let wChart = null, fChart = null, activeScen = 0, lastResults = null;
 function num(id) { return parseFloat(document.getElementById(id).value) || 0; }
 function str(id) { return document.getElementById(id).value.trim(); }
 
+function saveInputs() {
+  const data = {};
+  document.querySelectorAll('input').forEach(el => data[el.id] = el.value);
+  localStorage.setItem('mbaRoiInputs', JSON.stringify(data));
+}
+
+function loadInputs() {
+  const stored = localStorage.getItem('mbaRoiInputs');
+  if (stored) {
+    try {
+      const data = JSON.parse(stored);
+      for (const id in data) {
+        const el = document.getElementById(id);
+        if (el) el.value = data[id];
+      }
+    } catch(e) {}
+  }
+}
+
+function resetDefaults() {
+  localStorage.removeItem('mbaRoiInputs');
+  window.location.reload();
+}
+
+function fmt(n) {
+  return Number(n).toLocaleString('en-IN', { maximumFractionDigits: 1 });
+}
+
 function getInputs() {
   return {
     loanL:        num('loanAmount'),
@@ -77,7 +105,17 @@ function renderWealthChart(results, labels) {
     })),
     ...results.map(r => ({
       label: 'Net worth · ' + r.label, data: r.nwArr,
-      borderColor: r.color, backgroundColor: 'transparent',
+      borderColor: r.color,
+      backgroundColor: (context) => {
+        const chart = context.chart;
+        const {ctx, chartArea} = chart;
+        if (!chartArea) return null;
+        const g = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+        g.addColorStop(0, r.color + '33');
+        g.addColorStop(1, r.color + '00');
+        return g;
+      },
+      fill: true,
       borderWidth: 2.5, pointRadius: ctx => [0, getInputs().mbaDuration, 12].includes(ctx.dataIndex) ? 4 : 2,
       pointBackgroundColor: r.color, tension: 0.4, order: 1
     })),
@@ -98,12 +136,12 @@ function renderWealthChart(results, labels) {
         legend: { display: false },
         tooltip: { ...tt, callbacks: {
           title: a => String(a[0].label),
-          label: c => ` ${c.dataset.label}: ₹${c.parsed.y.toFixed(1)}L`
+          label: c => ` ${c.dataset.label}: ₹${fmt(c.parsed.y)}L`
         }}
       },
       scales: {
         x: { ticks: { color: tc, font: { size: 11 }, autoSkip: false, maxRotation: 0 }, grid: { color: gc }, border: { display: false } },
-        y: { ticks: { color: tc, font: { size: 11 }, callback: v => '₹' + v + 'L' }, grid: { color: gc }, border: { display: false } }
+        y: { ticks: { color: tc, font: { size: 11 }, callback: v => '₹' + fmt(v) + 'L' }, grid: { color: gc }, border: { display: false } }
       }
     },
     plugins: [shadePl]
@@ -130,12 +168,12 @@ function renderFlowChart(results, labels) {
         legend: { display: false },
         tooltip: { ...tt, callbacks: {
           title: a => String(a[0].label),
-          label: c => ` ${c.dataset.label}: ₹${c.parsed.y.toFixed(1)}L/yr`
+          label: c => ` ${c.dataset.label}: ₹${fmt(c.parsed.y)}L/yr`
         }}
       },
       scales: {
         x: { ticks: { color: tc, font: { size: 11 }, autoSkip: false, maxRotation: 0 }, grid: { color: gc }, border: { display: false } },
-        y: { ticks: { color: tc, font: { size: 11 }, callback: v => '₹' + v + 'L' }, grid: { color: gc }, border: { display: false }, min: 0 }
+        y: { ticks: { color: tc, font: { size: 11 }, callback: v => '₹' + fmt(v) + 'L' }, grid: { color: gc }, border: { display: false }, min: 0 }
       }
     },
     plugins: [shadePl]
@@ -149,20 +187,20 @@ function renderMetrics(results) {
     <div class="metric-card" style="--accent:${COLORS[i]}">
       <div class="mc-header">
         <span class="mc-label">${r.label}</span>
-        <span class="mc-emi">EMI ₹${(r.emi * 100000 / 1000).toFixed(1)}k/mo</span>
+        <span class="mc-emi">EMI ₹${fmt(r.emi * 100)}k/mo</span>
       </div>
       <div class="mc-grid">
         <div class="mc-item">
           <span class="mc-key">At graduation</span>
-          <span class="mc-val ${r.nwAtGrad < 0 ? 'neg' : ''}">${r.nwAtGrad < 0 ? '–' : ''}₹${Math.abs(r.nwAtGrad).toFixed(1)}L</span>
+          <span class="mc-val ${r.nwAtGrad < 0 ? 'neg' : ''}">${r.nwAtGrad < 0 ? '–' : ''}₹${fmt(Math.abs(r.nwAtGrad))}L</span>
         </div>
         <div class="mc-item">
           <span class="mc-key">5yr post-MBA</span>
-          <span class="mc-val">₹${r.nw5yr.toFixed(1)}L</span>
+          <span class="mc-val">₹${fmt(r.nw5yr)}L</span>
         </div>
         <div class="mc-item">
           <span class="mc-key">10yr corpus</span>
-          <span class="mc-val">₹${r.corp10yr.toFixed(1)}L</span>
+          <span class="mc-val">₹${fmt(r.corp10yr)}L</span>
         </div>
         <div class="mc-item">
           <span class="mc-key">Loan cleared</span>
@@ -174,7 +212,7 @@ function renderMetrics(results) {
         </div>
         <div class="mc-item">
           <span class="mc-key">Interest cost</span>
-          <span class="mc-val">₹${r.totalInterest.toFixed(1)}L</span>
+          <span class="mc-val">₹${fmt(r.totalInterest)}L</span>
         </div>
       </div>
     </div>
@@ -210,7 +248,11 @@ function debounce(fn, ms) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const debouncedRender = debounce(render, 250);
+  loadInputs();
+  const debouncedRender = debounce(() => {
+    saveInputs();
+    render();
+  }, 250);
   document.querySelectorAll('input').forEach(el => el.addEventListener('input', debouncedRender));
   render();
 });
