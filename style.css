@@ -132,6 +132,7 @@ body {
   padding-right: 4px;
   padding-bottom: 24px;
 }
+.inputs-panel > * { flex-shrink: 0; }
 .inputs-panel::-webkit-scrollbar { width: 4px; }
 .inputs-panel::-webkit-scrollbar-track { background: transparent; }
 .inputs-panel::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
@@ -259,6 +260,7 @@ input[type="text"]::placeholder { color: var(--text3); }
   padding-right: 4px;
   padding-bottom: 24px;
 }
+.results-panel > * { flex-shrink: 0; }
 .results-panel::-webkit-scrollbar { width: 4px; }
 .results-panel::-webkit-scrollbar-track { background: transparent; }
 .results-panel::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
