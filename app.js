@@ -99,11 +99,6 @@ function renderWealthChart(results, labels) {
   const { gc, tc, tt } = cDef();
   const datasets = [
     ...results.map(r => ({
-      label: 'Corpus · ' + r.label, data: r.corpArr,
-      borderColor: r.corpColor, backgroundColor: 'transparent',
-      borderWidth: 1.5, pointRadius: 0, tension: 0.4, order: 2
-    })),
-    ...results.map(r => ({
       label: 'Net worth · ' + r.label, data: r.nwArr,
       borderColor: r.color,
       backgroundColor: (context) => {
