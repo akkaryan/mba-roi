@@ -6,7 +6,7 @@ function calcEMI(principal, annualRatePct, months) {
 
 function simulate(inputs, scenario) {
   const {
-    loanL, loanRatePct, mbaDuration,
+    totalFeesL, loanL, loanRatePct, mbaDuration,
     currentInvL, cashL, mbaMonthlyL,
     mfReturnPct, repayYears, expGrowthPct,
     startYear
@@ -23,14 +23,15 @@ function simulate(inputs, scenario) {
   const SIM_YEARS = 13;
   const SIM_MONTHS = SIM_YEARS * 12;
 
-  let corpus = currentInvL, loan = 0, repayM = 0, clearedYear = null;
+  let corpus = currentInvL + cashL - Math.max(0, totalFeesL - loanL);
+  let loan = 0, repayM = 0, clearedYear = null;
   let aSal = 0, aExp = 0, aEMI = 0, aSav = 0;
 
   const nwArr = [], corpArr = [], loanArr = [];
   const salA = [], expA = [], emiA = [], savA = [];
   const R = v => Math.round(v * 10) / 10;
 
-  nwArr.push(R(corpus + cashL));
+  nwArr.push(R(corpus));
   corpArr.push(R(corpus));
   loanArr.push(0);
   salA.push(0); expA.push(0); emiA.push(0); savA.push(0);
@@ -47,7 +48,7 @@ function simulate(inputs, scenario) {
       const inhand = (startingCTC * inhandPct / 100 / 12) * Math.pow(1 + salaryGrowthPct / 100, yW);
       const monthlyExp = baseExpL * Math.pow(1 + expGrowthPct / 100, yW);
       const cEMI = repayM <= n ? emi : 0;
-      const sav = Math.max(0, inhand - monthlyExp - cEMI);
+      const sav = inhand - monthlyExp - cEMI;
       corpus = corpus * (1 + ir) + sav;
       if (repayM <= n && loan > 0) {
         loan = Math.max(0, loan - (emi - loan * MR));

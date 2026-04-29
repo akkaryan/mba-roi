@@ -35,7 +35,7 @@
   }
 }
 
-html { scroll-behavior: smooth; height: 100%; overflow: hidden; }
+html { scroll-behavior: smooth; height: 100%; }
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;

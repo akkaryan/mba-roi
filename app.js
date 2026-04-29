@@ -98,6 +98,7 @@ function fmt(n) {
 
 function getInputs() {
   return {
+    totalFeesL:   num('totalFees'),
     loanL:        num('loanAmount'),
     loanRatePct:  num('loanRate'),
     mbaDuration:  num('mbaDuration'),
@@ -265,7 +266,7 @@ function renderMetrics(results) {
           <span class="mc-val" style="color: var(--accent); font-weight: 700;">${r.breakEvenYear || '—'}</span>
         </div>
         <div class="mc-item">
-          <span class="mc-key">Interest cost</span>
+          <span class="mc-key">Total interest paid</span>
           <span class="mc-val">₹${fmt(r.totalInterest)}L</span>
         </div>
       </div>
