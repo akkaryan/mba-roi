@@ -241,14 +241,15 @@
   <div class="results-panel">
 
     <!-- Onboarding Banner -->
-    <div class="onboarding-banner" style="background: linear-gradient(to right, #EFF6FF, #F5F3FF); border: 1px solid #DBEAFE; border-radius: 16px; padding: 16px 20px; margin-bottom: 24px; color: var(--text); display: flex; align-items: center; gap: 16px; animation: fadeUp 0.6s ease-out;">
+    <div id="onboardingBanner" class="onboarding-banner" style="display: none; background: linear-gradient(to right, #EFF6FF, #F5F3FF); border: 1px solid #DBEAFE; border-radius: 16px; padding: 16px 20px; margin-bottom: 24px; color: var(--text); align-items: center; gap: 16px; animation: fadeUp 0.6s ease-out;">
       <div style="font-size: 24px;">👋</div>
-      <div>
-        <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">Welcome to the MBA ROI Calculator!</div>
-        <div style="font-size: 13px; color: var(--text2); line-height: 1.5;">
+      <div style="flex: 1;">
+        <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px; color: #1e3a8a;">Welcome to the MBA ROI Calculator!</div>
+        <div style="font-size: 13px; color: #3b82f6; line-height: 1.5;">
           <strong>How it works:</strong> Enter your MBA costs and current finances on the left. Then, define 3 potential career salary outcomes. The app will calculate exactly when your degree pays for itself.
         </div>
       </div>
+      <button onclick="dismissBanner()" aria-label="Dismiss banner" style="background: transparent; border: none; font-size: 20px; cursor: pointer; color: #93c5fd; padding: 0 8px;">×</button>
     </div>
 
     <!-- Metric Cards -->
@@ -265,7 +266,7 @@
     <div class="chart-card">
       <div class="chart-title">Net worth trajectory</div>
       <div class="chart-sub">Shaded band = MBA period · Bold lines = net worth · Red = loan outstanding</div>
-      <div id="dynamicBlurb" style="margin: 16px 0 8px; padding: 12px 16px; background: var(--surface2); border-radius: 8px; font-size: 13px; color: var(--text); line-height: 1.5; border: 1px dashed var(--border2);"></div>
+      <div id="dynamicBlurb" style="display: none; margin: 16px 0 8px; padding: 12px 16px; background: var(--surface2); border-radius: 8px; font-size: 13px; color: var(--text); line-height: 1.5; border: 1px dashed var(--border2);"></div>
       <div class="chart-legend">
         <span class="leg"><span class="leg-line" style="background:#2563EB;"></span>NW · Sc 1</span>
         <span class="leg"><span class="leg-line" style="background:#059669;"></span>NW · Sc 2</span>
@@ -317,14 +318,13 @@
 <script src="simulate.js"></script>
 <script src="app.js"></script>
 <script>
-  function showTab(idx, btn) {
-    document.querySelectorAll('.sc-tab').forEach((t, i) => {
-      t.classList.toggle('active', i === idx);
-      t.style.borderBottomColor = i === idx ? ['#2563EB','#059669','#7C3AED'][i] : 'transparent';
-      t.style.color = i === idx ? ['#2563EB','#059669','#7C3AED'][i] : '';
-      t.style.background = i === idx ? ['#EFF6FF','#F0FDF4','#F5F3FF'][i] : 'transparent';
-    });
-    document.querySelectorAll('.sc-panel').forEach((p, i) => p.classList.toggle('active', i === idx));
+  if (!localStorage.getItem('mbaRoiBannerDismissed')) {
+    const banner = document.getElementById('onboardingBanner');
+    if (banner) banner.style.display = 'flex';
+  }
+  function dismissBanner() {
+    document.getElementById('onboardingBanner').style.display = 'none';
+    localStorage.setItem('mbaRoiBannerDismissed', 'true');
   }
 </script>
 </body>

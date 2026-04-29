@@ -11,13 +11,10 @@ function str(id) { return document.getElementById(id).value.trim(); }
 
 function saveInputs() {
   const data = {};
-  const params = new URLSearchParams();
   document.querySelectorAll('input').forEach(el => {
     data[el.id] = el.value;
-    params.set(el.id, el.value);
   });
   localStorage.setItem('mbaRoiInputs', JSON.stringify(data));
-  window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
 }
 
 function loadInputs() {
@@ -38,14 +35,16 @@ function loadInputs() {
       if (el.placeholder && !el.placeholder.includes('e.g.')) el.value = el.placeholder;
       else if (el.placeholder && el.id.includes('Label')) el.value = el.placeholder.replace('e.g. ', '');
     }
-    // Remove placeholder so it doesn't look like an undeleted value
-    el.removeAttribute('placeholder');
+    }
   });
 }
 
 function copyLink(btn) {
   saveInputs();
-  navigator.clipboard.writeText(window.location.href).then(() => {
+  const params = new URLSearchParams();
+  document.querySelectorAll('input').forEach(el => params.set(el.id, el.value));
+  const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+  navigator.clipboard.writeText(url).then(() => {
     const originalText = btn.innerHTML;
     btn.innerHTML = '✓ Copied!';
     setTimeout(() => btn.innerHTML = originalText, 2000);
@@ -88,8 +87,9 @@ function downloadCSV() {
 }
 
 function resetDefaults() {
+  if (!confirm('Are you sure you want to reset all inputs to their defaults?')) return;
   localStorage.removeItem('mbaRoiInputs');
-  window.location.reload();
+  window.location.href = window.location.pathname;
 }
 
 function fmt(n) {
@@ -147,7 +147,7 @@ const shadePl = {
     const { ctx, chartArea: { top, bottom }, scales: { x } } = c;
     const inputs = getInputs();
     const x0 = x.getPixelForValue(0);
-    const x1 = x.getPixelForValue(inputs.mbaDuration);
+    const x1 = x.getPixelForValue(inputs ? inputs.mbaDuration : 2);
     ctx.save();
     ctx.fillStyle = dark() ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)';
     ctx.fillRect(x0, top, x1 - x0, bottom - top);
@@ -228,7 +228,7 @@ function renderFlowChart(results, labels) {
       },
       scales: {
         x: { ticks: { color: tc, font: { size: 11 }, autoSkip: false, maxRotation: 0 }, grid: { color: gc }, border: { display: false } },
-        y: { ticks: { color: tc, font: { size: 11 }, callback: v => '₹' + fmt(v) + 'L' }, grid: { color: gc }, border: { display: false }, min: 0 }
+        y: { ticks: { color: tc, font: { size: 11 }, callback: v => '₹' + fmt(v) + 'L' }, grid: { color: gc }, border: { display: false } }
       }
     },
     plugins: [shadePl]
@@ -262,7 +262,7 @@ function renderMetrics(results) {
           <span class="mc-val">${r.cleared}</span>
         </div>
         <div class="mc-item" style="background: var(--surface2); padding: 8px; border-radius: 6px; border: 1px solid var(--border);">
-          <span class="mc-key" style="color: var(--text); font-weight: 600;">Break-even <span class="info-btn" data-tip="Year when post-MBA net worth surpasses pre-MBA trajectory">ⓘ</span></span>
+          <span class="mc-key" style="color: var(--text); font-weight: 600;">Break-even <span class="info-btn" data-tip="Year when your net worth fully recovers to your pre-MBA starting wealth">ⓘ</span></span>
           <span class="mc-val" style="color: var(--accent); font-weight: 700;">${r.breakEvenYear || '—'}</span>
         </div>
         <div class="mc-item">
@@ -307,8 +307,21 @@ function updateBlurb(results) {
   const html = `💡 <strong>Chart Insights:</strong> The red line shows your loan balance. Your net worth drops negative during the MBA, but crosses back to positive (break-even) ${beStr}.${gapStr}`;
   
   const el = document.getElementById('dynamicBlurb');
-  if (el) el.innerHTML = html;
+  if (el) {
+    el.innerHTML = html;
+    el.style.display = 'block';
+  }
 }
+
+window.showTab = function(idx, btn) {
+  document.querySelectorAll('.sc-tab').forEach((t, i) => {
+    t.classList.toggle('active', i === idx);
+    t.style.borderBottomColor = i === idx ? ['#2563EB','#059669','#7C3AED'][i] : 'transparent';
+    t.style.color = i === idx ? ['#2563EB','#059669','#7C3AED'][i] : '';
+    t.style.background = i === idx ? ['#EFF6FF','#F0FDF4','#F5F3FF'][i] : 'transparent';
+  });
+  document.querySelectorAll('.sc-panel').forEach((p, i) => p.classList.toggle('active', i === idx));
+};
 
 function render() {
   const inputs = getInputs();
