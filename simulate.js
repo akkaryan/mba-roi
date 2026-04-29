@@ -85,7 +85,7 @@ function simulate(inputs, scenario) {
     nw5yr: nwArr[mbaDuration + 5] || nwArr[nwArr.length - 1],
     nw10yr: nwArr[Math.min(mbaDuration + 10, nwArr.length - 1)],
     corp10yr: corpArr[Math.min(mbaDuration + 10, corpArr.length - 1)],
-    totalInterest: R(loanAtRepay - loanL),
+    totalInterest: R(emi * n - loanL),
   };
 }
 

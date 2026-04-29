@@ -44,13 +44,47 @@ function loadInputs() {
 }
 
 function copyLink(btn) {
+  saveInputs();
   navigator.clipboard.writeText(window.location.href).then(() => {
-    const original = btn.innerText;
-    btn.innerText = '✅ Copied!';
-    setTimeout(() => btn.innerText = original, 2000);
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '✓ Copied!';
+    setTimeout(() => btn.innerHTML = originalText, 2000);
   }).catch(() => {
     prompt("Copy this link to share:", window.location.href);
   });
+}
+
+function downloadCSV() {
+  if (!lastResults) return;
+  const inputs = getInputs();
+  const startYear = inputs.startYear;
+  
+  let csv = 'Year,Scenario,Salary In-Hand (L),Total Expenses (L),Loan EMI (L),Net Savings (L),Loan Outstanding (L),Investment Corpus (L),Net Worth (L)\n';
+  
+  lastResults.forEach(r => {
+    for(let i = 0; i < r.nwArr.length; i++) {
+      const year = startYear + i;
+      const scen = r.label;
+      const sal = r.salA[i];
+      const exp = r.expA[i];
+      const emi = r.emiA[i];
+      const sav = r.savA[i];
+      const loan = r.loanArr[i];
+      const corp = r.corpArr[i];
+      const nw = r.nwArr[i];
+      
+      csv += `${year},${scen},${sal},${exp},${emi},${sav},${loan},${corp},${nw}\n`;
+    }
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.setAttribute('download', 'mba_roi_projection.csv');
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 
 function resetDefaults() {
