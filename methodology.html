@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Methodology - MBA ROI Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .meth-main { max-width: 800px; margin: 40px auto; padding: 0 24px; padding-bottom: 60px; }
+    .meth-title { font-size: 40px; font-weight: 800; margin-bottom: 16px; letter-spacing: -0.5px; }
+    .meth-sub { font-size: 18px; color: var(--text2); margin-bottom: 40px; line-height: 1.5; }
+    .meth-card { background: var(--surface); padding: 32px; border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); margin-bottom: 24px; animation: fadeUp 0.6s ease-out backwards; }
+    .meth-card:nth-child(2) { animation-delay: 0.1s; }
+    .meth-card:nth-child(3) { animation-delay: 0.2s; }
+    .meth-card:nth-child(4) { animation-delay: 0.3s; }
+    .meth-h2 { font-size: 20px; font-weight: 700; margin-bottom: 16px; color: var(--text); display: flex; align-items: center; gap: 8px; }
+    .meth-text { font-size: 15px; color: var(--text2); line-height: 1.7; margin-bottom: 16px; }
+    .meth-ul { margin-left: 20px; font-size: 15px; color: var(--text2); line-height: 1.6; }
+    .meth-ul li { margin-bottom: 12px; }
+    .formula { background: var(--surface2); padding: 12px 16px; border-radius: 8px; font-family: monospace; font-size: 13px; color: var(--text); border: 1px dashed var(--border2); margin-top: 8px; overflow-x: auto; }
+    .highlight { color: var(--blue); font-weight: 600; }
+    
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body style="overflow-y: auto; background: var(--bg);">
+  <header class="header">
+    <div class="header-inner">
+      <a href="index.html" class="logo" style="text-decoration:none;">
+        <div class="logo-mark">
+          <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 13L6 8L9 11L12 6L16 10" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="16" cy="10" r="1.5" fill="white"/>
+          </svg>
+        </div>
+        <span class="logo-text">MBA ROI Calculator</span>
+      </a>
+      <div class="header-sep"></div>
+      <a href="index.html" style="text-decoration:none; color:var(--text2); font-weight:500; font-size:14px;">← Back to App</a>
+    </div>
+  </header>
+
+  <main class="meth-main">
+    <h1 class="meth-title">Calculation Methodology</h1>
+    <p class="meth-sub">Total transparency into how your post-MBA wealth is modeled month-by-month over a 13-year trajectory.</p>
+
+    <div class="meth-card">
+      <div class="meth-h2"><span>🎓</span> Phase 1: During the MBA</div>
+      <p class="meth-text">The model simulates your financial state for the duration of your study period. During this time, it is assumed you earn zero salary and rely on your pre-MBA investments.</p>
+      <ul class="meth-ul">
+        <li><strong>Loan Accrual:</strong> Your loan principal is drawn down evenly over the course duration. Simple interest is accrued on the entire loan amount during the study period to determine your starting balance at graduation.
+        <div class="formula">Loan at Graduation = Principal × (1 + Interest Rate × Duration in Years)</div>
+        </li>
+        <li><strong>Living Expenses:</strong> Monthly expenses are deducted directly from your existing investment corpus (Stocks, Cash).</li>
+        <li><strong>Corpus Compounding:</strong> Your remaining investments continue to compound monthly at your expected <span class="highlight">MF Return</span> rate.</li>
+      </ul>
+    </div>
+
+    <div class="meth-card">
+      <div class="meth-h2"><span>💼</span> Phase 2: Post-MBA Career</div>
+      <p class="meth-text">Starting from month 1 post-graduation, the model runs a monthly cashflow simulation incorporating salary, expenses, loan EMIs, and investments.</p>
+      <ul class="meth-ul">
+        <li><strong>Income Growth:</strong> Your starting CTC is converted to a monthly in-hand salary. On each anniversary of your graduation, your salary grows strictly by your specified <span class="highlight">Salary Growth %</span>.</li>
+        <li><strong>Lifestyle Inflation:</strong> Your base expenses grow annually by your specified <span class="highlight">Expense Growth %</span>.</li>
+        <li><strong>Loan EMI:</strong> The standard amortizing loan formula is used to calculate your flat monthly EMI based on the remaining balance at graduation and your repayment tenure.</li>
+        <li><strong>Savings & Investments:</strong> The golden rule of this model is that 100% of your net monthly savings are invested directly into the market.
+        <div class="formula">Monthly Savings = (In-hand Salary) - (Monthly Expenses) - (EMI)</div>
+        If savings are negative, your corpus is drained to cover the deficit. If positive, they are added to the corpus which compounds monthly at your <span class="highlight">MF Return</span> rate.</li>
+      </ul>
+    </div>
+
+    <div class="meth-card">
+      <div class="meth-h2"><span>📈</span> Key Metrics Defined</div>
+      <ul class="meth-ul">
+        <li><strong>Net Worth:</strong> Defined simply as <code>(Total Investment Corpus) - (Outstanding Loan Balance)</code> at any given month.</li>
+        <li><strong>Break-Even Year:</strong> The exact year when your post-MBA Net Worth recovers from the heavy educational costs and permanently surpasses your absolute pre-MBA starting wealth.</li>
+        <li><strong>10-Year Corpus:</strong> Your total liquid mutual fund/investment balance exactly 10 years after you graduate.</li>
+      </ul>
+    </div>
+  </main>
+</body>
+</html>

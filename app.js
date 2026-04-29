@@ -11,21 +11,46 @@ function str(id) { return document.getElementById(id).value.trim(); }
 
 function saveInputs() {
   const data = {};
-  document.querySelectorAll('input').forEach(el => data[el.id] = el.value);
+  const params = new URLSearchParams();
+  document.querySelectorAll('input').forEach(el => {
+    data[el.id] = el.value;
+    params.set(el.id, el.value);
+  });
   localStorage.setItem('mbaRoiInputs', JSON.stringify(data));
+  window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
 }
 
 function loadInputs() {
-  const stored = localStorage.getItem('mbaRoiInputs');
-  if (stored) {
-    try {
-      const data = JSON.parse(stored);
-      for (const id in data) {
-        const el = document.getElementById(id);
-        if (el) el.value = data[id];
-      }
-    } catch(e) {}
+  const params = new URLSearchParams(window.location.search);
+  const hasUrlParams = params.toString().length > 0;
+  
+  let storedData = null;
+  if (!hasUrlParams) {
+    try { storedData = JSON.parse(localStorage.getItem('mbaRoiInputs')); } catch(e) {}
   }
+
+  document.querySelectorAll('input').forEach(el => {
+    if (hasUrlParams && params.has(el.id)) {
+      el.value = params.get(el.id);
+    } else if (!hasUrlParams && storedData && storedData[el.id] !== undefined) {
+      el.value = storedData[el.id];
+    } else {
+      if (el.placeholder && !el.placeholder.includes('e.g.')) el.value = el.placeholder;
+      else if (el.placeholder && el.id.includes('Label')) el.value = el.placeholder.replace('e.g. ', '');
+    }
+    // Remove placeholder so it doesn't look like an undeleted value
+    el.removeAttribute('placeholder');
+  });
+}
+
+function copyLink(btn) {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    const original = btn.innerText;
+    btn.innerText = '✅ Copied!';
+    setTimeout(() => btn.innerText = original, 2000);
+  }).catch(() => {
+    prompt("Copy this link to share:", window.location.href);
+  });
 }
 
 function resetDefaults() {
@@ -54,7 +79,7 @@ function getInputs() {
 
 function getScenarios() {
   return [1, 2, 3].map((n, i) => ({
-    label:          str(`sc${n}Label`) || SCENARIO_DEFAULTS[i].label,
+    label:          str(`sc${n}Label`) || `Scenario ${n}`,
     startingCTC:    num(`sc${n}CTC`),
     inhandPct:      num(`sc${n}Inhand`),
     salaryGrowthPct:num(`sc${n}Growth`),
@@ -112,12 +137,12 @@ function renderWealthChart(results, labels) {
       },
       fill: true,
       borderWidth: 2.5, pointRadius: ctx => [0, getInputs().mbaDuration, 12].includes(ctx.dataIndex) ? 4 : 2,
-      pointBackgroundColor: r.color, tension: 0.4, order: 1
+      pointBackgroundColor: r.color, cubicInterpolationMode: 'monotone', order: 1
     })),
     {
       label: 'Loan outstanding', data: results[0].loanArr,
       borderColor: '#EF4444', backgroundColor: 'transparent',
-      borderWidth: 2, pointRadius: 2, pointBackgroundColor: '#EF4444', tension: 0.35, order: 1
+      borderWidth: 2, pointRadius: 2, pointBackgroundColor: '#EF4444', cubicInterpolationMode: 'monotone', order: 1
     }
   ];
   if (wChart) wChart.destroy();
@@ -147,10 +172,10 @@ function renderFlowChart(results, labels) {
   const r = results[activeScen];
   const { gc, tc, tt } = cDef();
   const datasets = [
-    { label: 'Salary in-hand',  data: r.salA, borderColor: '#059669', backgroundColor: 'transparent', borderWidth: 2.5, pointRadius: 2, pointBackgroundColor: '#059669', tension: 0.35 },
-    { label: 'Total expenses',  data: r.expA, borderColor: '#EF4444', backgroundColor: 'transparent', borderWidth: 2.5, pointRadius: 2, pointBackgroundColor: '#EF4444', tension: 0.35 },
-    { label: 'Loan EMI',        data: r.emiA, borderColor: '#D97706', backgroundColor: 'transparent', borderWidth: 2.5, pointRadius: 2, pointBackgroundColor: '#D97706', tension: 0.35 },
-    { label: 'Net savings → MF',data: r.savA, borderColor: '#2563EB', backgroundColor: 'transparent', borderWidth: 2.5, pointRadius: 2, pointBackgroundColor: '#2563EB', tension: 0.35 },
+    { label: 'Salary in-hand',  data: r.salA, borderColor: '#059669', backgroundColor: 'transparent', borderWidth: 2.5, pointRadius: 2, pointBackgroundColor: '#059669', cubicInterpolationMode: 'monotone' },
+    { label: 'Total expenses',  data: r.expA, borderColor: '#EF4444', backgroundColor: 'transparent', borderWidth: 2.5, pointRadius: 2, pointBackgroundColor: '#EF4444', cubicInterpolationMode: 'monotone' },
+    { label: 'Loan EMI',        data: r.emiA, borderColor: '#D97706', backgroundColor: 'transparent', borderWidth: 2.5, pointRadius: 2, pointBackgroundColor: '#D97706', cubicInterpolationMode: 'monotone' },
+    { label: 'Net savings → MF',data: r.savA, borderColor: '#2563EB', backgroundColor: 'transparent', borderWidth: 2.5, pointRadius: 2, pointBackgroundColor: '#2563EB', cubicInterpolationMode: 'monotone' },
   ];
   if (fChart) fChart.destroy();
   fChart = new Chart(document.getElementById('flowChart'), {
@@ -181,7 +206,7 @@ function renderMetrics(results) {
   el.innerHTML = results.map((r, i) => `
     <div class="metric-card" style="--accent:${COLORS[i]}">
       <div class="mc-header">
-        <span class="mc-label">${r.label}</span>
+        <span class="mc-label">${r.label} <span class="info-btn" data-tip="Projected final outcome for this career scenario">ⓘ</span></span>
         <span class="mc-emi">EMI ₹${fmt(r.emi * 100)}k/mo</span>
       </div>
       <div class="mc-grid">
@@ -194,16 +219,16 @@ function renderMetrics(results) {
           <span class="mc-val">₹${fmt(r.nw5yr)}L</span>
         </div>
         <div class="mc-item">
-          <span class="mc-key">10yr corpus</span>
+          <span class="mc-key">10yr corpus <span class="info-btn" data-tip="Total mutual fund balance at year 10 post-MBA">ⓘ</span></span>
           <span class="mc-val">₹${fmt(r.corp10yr)}L</span>
         </div>
         <div class="mc-item">
           <span class="mc-key">Loan cleared</span>
           <span class="mc-val">${r.cleared}</span>
         </div>
-        <div class="mc-item">
-          <span class="mc-key">Break-even</span>
-          <span class="mc-val">${r.breakEvenYear || '—'}</span>
+        <div class="mc-item" style="background: var(--surface2); padding: 8px; border-radius: 6px; border: 1px solid var(--border);">
+          <span class="mc-key" style="color: var(--text); font-weight: 600;">Break-even <span class="info-btn" data-tip="Year when post-MBA net worth surpasses pre-MBA trajectory">ⓘ</span></span>
+          <span class="mc-val" style="color: var(--accent); font-weight: 700;">${r.breakEvenYear || '—'}</span>
         </div>
         <div class="mc-item">
           <span class="mc-key">Interest cost</span>
@@ -227,6 +252,29 @@ function setScen(i) {
   if (lastResults) renderFlowChart(lastResults, getLabels(new Date().getFullYear(), 14));
 }
 
+function updateBlurb(results) {
+  const beVals = results.map(r => parseInt(r.breakEvenYear)).filter(y => !isNaN(y));
+  const minBE = beVals.length ? Math.min(...beVals) : '—';
+  const maxBE = beVals.length ? Math.max(...beVals) : '—';
+  
+  const sorted = [...results].sort((a,b) => a.corp10yr - b.corp10yr);
+  const worst = sorted[0];
+  const best = sorted[sorted.length-1];
+
+  let beStr = '';
+  if (minBE !== '—' && minBE !== maxBE) beStr = `between <strong>${minBE}</strong> and <strong>${maxBE}</strong>`;
+  else if (minBE !== '—') beStr = `in <strong>${minBE}</strong>`;
+  else beStr = `never`;
+
+  const gap = best.corp10yr - worst.corp10yr;
+  const gapStr = gap > 0 ? ` Over 10 years, the difference between your <em>${worst.label}</em> and <em>${best.label}</em> trajectory creates a wealth gap of <strong>₹${fmt(gap)}L</strong>.` : '';
+
+  const html = `💡 <strong>Chart Insights:</strong> The red line shows your loan balance. Your net worth drops negative during the MBA, but crosses back to positive (break-even) ${beStr}.${gapStr}`;
+  
+  const el = document.getElementById('dynamicBlurb');
+  if (el) el.innerHTML = html;
+}
+
 function render() {
   const inputs = getInputs();
   const scenarios = getScenarios();
@@ -236,6 +284,7 @@ function render() {
   renderWealthChart(results, labels);
   renderFlowChart(results, labels);
   renderMetrics(results);
+  updateBlurb(results);
 }
 
 function debounce(fn, ms) {

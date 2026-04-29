@@ -25,8 +25,8 @@
     </div>
     <p class="header-sub">Project your post-MBA wealth journey</p>
     <div class="header-sep"></div>
+    <a href="methodology.html" style="text-decoration:none; color:var(--text2); font-weight:500; font-size:14px; margin-right: 16px; transition: color 0.2s;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text2)'">Methodology</a>
     <a href="about.html" style="text-decoration:none; color:var(--text2); font-weight:500; font-size:14px; margin-right: 16px; transition: color 0.2s;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text2)'">About the Creator</a>
-    <span class="header-badge">All savings → MF @ 10%</span>
   </div>
 </header>
 
@@ -40,7 +40,7 @@
     <div class="card">
       <div class="card-header">
         <div class="card-icon" style="background:#EFF6FF;">🎓</div>
-        <span class="card-title">Programme details</span>
+        <span class="card-title">1. MBA Costs & Funding</span>
       </div>
       <div class="card-body">
         <div class="field-group">
@@ -52,6 +52,7 @@
             <div class="field">
               <label>Loan amount (₹L)</label>
               <input type="number" id="loanAmount" min="1" max="200" step="0.5" placeholder="35">
+              <span class="field-hint">Can include living expenses during MBA.</span>
             </div>
           </div>
           <div class="field-row">
@@ -72,7 +73,7 @@
     <div class="card">
       <div class="card-header">
         <div class="card-icon" style="background:#F0FDF4;">💰</div>
-        <span class="card-title">Current finances</span>
+        <span class="card-title">2. Pre-MBA Wealth</span>
       </div>
       <div class="card-body">
         <div class="field-group">
@@ -100,14 +101,15 @@
     <div class="card">
       <div class="card-header">
         <div class="card-icon" style="background:#F5F3FF;">⚙️</div>
-        <span class="card-title">Shared assumptions</span>
+        <span class="card-title">3. Market Assumptions</span>
       </div>
       <div class="card-body">
         <div class="field-group">
           <div class="field-row">
             <div class="field">
-              <label>MF return (% p.a.)</label>
+              <label>MF return (% p.a.) <span class="info-btn" data-tip="Expected annualized return of your total mutual fund investment balance">ⓘ</span></label>
               <input type="number" id="mfReturn" min="1" max="25" step="0.5" placeholder="10">
+              <span class="field-hint">Note: Model assumes 100% of net savings go into this MF corpus.</span>
             </div>
             <div class="field">
               <label>Repayment (years)</label>
@@ -127,13 +129,14 @@
     <div class="card">
       <div class="card-header">
         <div class="card-icon" style="background:#FFF7ED;">📊</div>
-        <span class="card-title">Career scenarios</span>
+        <span class="card-title">4. Career Trajectories <span class="info-btn" data-tip="Create 3 different career trajectories (e.g., conservative, realistic, optimistic) to compare how your salary growth affects your wealth">ⓘ</span></span>
       </div>
       <div class="sc-tabs">
-        <button class="sc-tab active" onclick="showTab(0, this)" style="border-bottom-color:#2563EB;color:#2563EB;">Scenario 1</button>
+        <button class="sc-tab active" onclick="showTab(0, this)" style="border-bottom-color:#2563EB;color:#2563EB;background:#EFF6FF;">Scenario 1</button>
         <button class="sc-tab" onclick="showTab(1, this)">Scenario 2</button>
         <button class="sc-tab" onclick="showTab(2, this)">Scenario 3</button>
       </div>
+      <div style="font-size: 11px; color: var(--text3); padding: 0 16px 12px; text-align: center;">Configure all 3 tabs to compare trajectories.</div>
 
       <!-- Scenario 1 -->
       <div class="sc-panel active" id="scPanel0">
@@ -148,7 +151,7 @@
               <input type="number" id="sc1CTC" min="1" max="500" step="0.5" placeholder="28">
             </div>
             <div class="field">
-              <label>In-hand (% of CTC)</label>
+              <label>In-hand (% of CTC) <span class="info-btn" data-tip="Post-tax take-home pay">ⓘ</span></label>
               <input type="number" id="sc1Inhand" min="50" max="95" step="1" placeholder="72">
             </div>
           </div>
@@ -178,7 +181,7 @@
               <input type="number" id="sc2CTC" min="1" max="500" step="0.5" placeholder="35">
             </div>
             <div class="field">
-              <label>In-hand (% of CTC)</label>
+              <label>In-hand (% of CTC) <span class="info-btn" data-tip="Post-tax take-home pay">ⓘ</span></label>
               <input type="number" id="sc2Inhand" min="50" max="95" step="1" placeholder="73">
             </div>
           </div>
@@ -208,7 +211,7 @@
               <input type="number" id="sc3CTC" min="1" max="500" step="0.5" placeholder="50">
             </div>
             <div class="field">
-              <label>In-hand (% of CTC)</label>
+              <label>In-hand (% of CTC) <span class="info-btn" data-tip="Post-tax take-home pay">ⓘ</span></label>
               <input type="number" id="sc3Inhand" min="50" max="95" step="1" placeholder="74">
             </div>
           </div>
@@ -225,7 +228,10 @@
         </div>
       </div>
     </div>
-    <button class="reset-btn" onclick="resetDefaults()">↺ Reset to defaults</button>
+    <div style="display: flex; gap: 8px;">
+      <button class="reset-btn" style="flex:1;" onclick="resetDefaults()">↺ Reset to defaults</button>
+      <button class="reset-btn" style="flex:1;" onclick="copyLink(this)">🔗 Copy link</button>
+    </div>
 
   </div>
   <!-- end inputs panel -->
@@ -233,13 +239,26 @@
   <!-- ── RIGHT: Results ── -->
   <div class="results-panel">
 
+    <!-- Onboarding Banner -->
+    <div class="onboarding-banner" style="background: linear-gradient(to right, #EFF6FF, #F5F3FF); border: 1px solid #DBEAFE; border-radius: 16px; padding: 16px 20px; margin-bottom: 24px; color: var(--text); display: flex; align-items: center; gap: 16px; animation: fadeUp 0.6s ease-out;">
+      <div style="font-size: 24px;">👋</div>
+      <div>
+        <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">Welcome to the MBA ROI Calculator!</div>
+        <div style="font-size: 13px; color: var(--text2); line-height: 1.5;">
+          <strong>How it works:</strong> Enter your MBA costs and current finances on the left. Then, define 3 potential career salary outcomes. The app will calculate exactly when your degree pays for itself.
+        </div>
+      </div>
+    </div>
+
     <!-- Metric Cards -->
+    <div class="chart-title" style="margin-bottom: 12px;">Financial Outcomes (13 Year Projection)</div>
     <div id="metricCards" class="metrics-grid"></div>
 
     <!-- Wealth Chart -->
     <div class="chart-card">
       <div class="chart-title">Investment corpus &amp; net worth trajectory</div>
       <div class="chart-sub">Shaded band = MBA period · Bold lines = net worth · Red = loan outstanding</div>
+      <div id="dynamicBlurb" style="margin: 16px 0 8px; padding: 12px 16px; background: var(--surface2); border-radius: 8px; font-size: 13px; color: var(--text); line-height: 1.5; border: 1px dashed var(--border2);"></div>
       <div class="chart-legend">
         <span class="leg"><span class="leg-line" style="background:#2563EB;"></span>NW · Sc 1</span>
         <span class="leg"><span class="leg-line" style="background:#059669;"></span>NW · Sc 2</span>
@@ -282,7 +301,7 @@
 
 <footer class="footer">
   Built for MBA peers · Numbers are projections, not financial advice ·
-  <a href="https://github.com" target="_blank">Open source</a>
+  <a href="https://github.com/akkaryan" target="_blank" style="color:var(--blue);text-decoration:none;font-weight:500;">akkaryan</a>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -294,6 +313,7 @@
       t.classList.toggle('active', i === idx);
       t.style.borderBottomColor = i === idx ? ['#2563EB','#059669','#7C3AED'][i] : 'transparent';
       t.style.color = i === idx ? ['#2563EB','#059669','#7C3AED'][i] : '';
+      t.style.background = i === idx ? ['#EFF6FF','#F0FDF4','#F5F3FF'][i] : 'transparent';
     });
     document.querySelectorAll('.sc-panel').forEach((p, i) => p.classList.toggle('active', i === idx));
   }

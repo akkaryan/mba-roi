@@ -231,6 +231,44 @@ input[type="text"]::placeholder { color: var(--text3); }
   margin-top: 2px;
 }
 
+.info-btn {
+  display: inline-block;
+  cursor: help;
+  opacity: 0.5;
+  font-size: 11px;
+  margin-left: 4px;
+  position: relative;
+}
+.info-btn:hover { opacity: 1; }
+.info-btn::after {
+  content: attr(data-tip);
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  background: var(--surface2);
+  color: var(--text);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-family: 'Inter', sans-serif;
+  width: max-content;
+  max-width: 220px;
+  text-align: center;
+  pointer-events: none;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  border: 1px solid var(--border2);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s;
+}
+.info-btn:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(2px);
+}
+
 .reset-btn {
   margin-top: 8px;
   padding: 10px;
