@@ -35,7 +35,6 @@ function loadInputs() {
       if (el.placeholder && !el.placeholder.includes('e.g.')) el.value = el.placeholder;
       else if (el.placeholder && el.id.includes('Label')) el.value = el.placeholder.replace('e.g. ', '');
     }
-    }
   });
 }
 
@@ -91,6 +90,13 @@ function resetDefaults() {
   localStorage.removeItem('mbaRoiInputs');
   window.location.href = window.location.pathname;
 }
+
+function dismissBanner() {
+  const el = document.getElementById('onboardingBanner');
+  if (el) el.style.display = 'none';
+  localStorage.setItem('mbaRoiBannerDismissed', 'true');
+}
+
 
 function fmt(n) {
   return Number(n).toLocaleString('en-IN', { maximumFractionDigits: 1 });
@@ -333,6 +339,14 @@ function render() {
   renderFlowChart(results, labels);
   renderMetrics(results);
   updateBlurb(results);
+
+  // On mobile, pulse the Results tab when user is still on Inputs tab
+  if (window.innerWidth <= 900) {
+    const rBtn = document.getElementById('mobileTabResults');
+    if (rBtn && !rBtn.classList.contains('active')) {
+      rBtn.setAttribute('data-updated', '');
+    }
+  }
 }
 
 function debounce(fn, ms) {
@@ -341,6 +355,22 @@ function debounce(fn, ms) {
 
 document.addEventListener('DOMContentLoaded', () => {
   loadInputs();
+
+  // Show onboarding banner once per browser
+  if (!localStorage.getItem('mbaRoiBannerDismissed')) {
+    const banner = document.getElementById('onboardingBanner');
+    if (banner) banner.style.display = 'flex';
+  }
+
+  // Touch support for info-btn tooltips (hover doesn't work on mobile)
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.info-btn');
+    document.querySelectorAll('.info-btn.touch-open').forEach(b => {
+      if (b !== btn) b.classList.remove('touch-open');
+    });
+    if (btn) { e.stopPropagation(); btn.classList.toggle('touch-open'); }
+  });
+
   const debouncedRender = debounce(() => {
     saveInputs();
     render();
