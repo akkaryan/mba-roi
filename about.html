@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About MBA ROI Calculator & Aryan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .about-main {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 24px;
+      height: 100%;
+    }
+    .about-hero {
+      text-align: center;
+      margin-bottom: 60px;
+      animation: fadeUp 0.8s ease-out;
+    }
+    .about-hero h1 {
+      font-size: 48px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 16px;
+      letter-spacing: -1px;
+    }
+    .about-hero p {
+      font-size: 18px;
+      color: var(--text2);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+      animation: fadeUp 1s ease-out;
+      padding-bottom: 60px;
+    }
+    .about-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+    .about-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 6px;
+      background: linear-gradient(90deg, var(--blue), var(--green), var(--purple));
+    }
+    .photo-wrap {
+      width: 100%;
+      aspect-ratio: 3/4;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      transform: rotate(-3deg);
+      transition: transform 0.3s;
+    }
+    .photo-wrap:hover {
+      transform: rotate(0deg) scale(1.02);
+    }
+    .photo-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .about-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+    .about-text {
+      font-size: 15px;
+      color: var(--text2);
+      line-height: 1.8;
+      margin-bottom: 24px;
+    }
+    .social-links {
+      display: flex;
+      gap: 16px;
+    }
+    .social-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+      color: white;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .social-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+    .btn-ig { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+    .btn-gh { background: #333; }
+    
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (max-width: 768px) {
+      .about-grid { grid-template-columns: 1fr; }
+      .photo-wrap { max-width: 300px; margin: 0 auto; transform: rotate(0); }
+    }
+  </style>
+</head>
+<body style="overflow-y: auto;">
+  <header class="header">
+    <div class="header-inner">
+      <a href="index.html" class="logo" style="text-decoration:none;">
+        <div class="logo-mark">
+          <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 13L6 8L9 11L12 6L16 10" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="16" cy="10" r="1.5" fill="white"/>
+          </svg>
+        </div>
+        <span class="logo-text">MBA ROI Calculator</span>
+      </a>
+      <div class="header-sep"></div>
+      <a href="index.html" style="text-decoration:none; color:var(--text2); font-weight:500; font-size:14px;">← Back to App</a>
+    </div>
+  </header>
+
+  <main class="about-main">
+    <div class="about-hero">
+      <h1>The Math Behind the Magic</h1>
+      <p>Ever wondered if that fancy MBA is actually going to pay off? We built this tool to cut through the noise, do the hardcore compounding math, and show you exactly when your bank account will thank you.</p>
+    </div>
+
+    <div class="about-grid">
+      <div class="photo-wrap">
+        <!-- Make sure to name your photo 'profile.jpg' and place it in the same folder -->
+        <img src="profile.jpg" alt="Aryan Keshri" onerror="this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80'">
+      </div>
+      
+      <div class="about-card">
+        <div class="about-title">Hey, I'm Aryan! 👋</div>
+        <div class="about-text">
+          <p>I'm the brain (and the keyboard) behind this tool. As someone deeply fascinated by finance, tech, and the true cost of education, I built the MBA ROI Calculator to help peers make data-driven life decisions without needing a PhD in Excel.</p>
+          <br>
+          <p>When I'm not writing code or analyzing investment corpuses, you can probably find me exploring new ideas or sharing bits of my journey online. Feel free to reach out and let's connect!</p>
+        </div>
+        
+        <div class="social-links">
+          <a href="https://www.instagram.com/aryounique/" target="_blank" class="social-btn btn-ig">
+            📸 Instagram
+          </a>
+          <a href="https://github.com/akkaryan" target="_blank" class="social-btn btn-gh">
+            🐙 GitHub
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
