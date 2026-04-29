@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Guide - MBA ROI Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .guide-main { max-width: 800px; margin: 40px auto; padding: 0 24px; padding-bottom: 60px; }
+    .guide-title { font-size: 40px; font-weight: 800; margin-bottom: 16px; letter-spacing: -0.5px; }
+    .guide-sub { font-size: 18px; color: var(--text2); margin-bottom: 40px; line-height: 1.5; }
+    .guide-card { background: var(--surface); padding: 32px; border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); margin-bottom: 24px; animation: fadeUp 0.6s ease-out backwards; }
+    .guide-card:nth-child(2) { animation-delay: 0.1s; }
+    .guide-card:nth-child(3) { animation-delay: 0.2s; }
+    .guide-card:nth-child(4) { animation-delay: 0.3s; }
+    .guide-h2 { font-size: 20px; font-weight: 700; margin-bottom: 16px; color: var(--text); display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border2); padding-bottom: 12px; }
+    .guide-text { font-size: 15px; color: var(--text2); line-height: 1.7; margin-bottom: 16px; }
+    .step-badge { background: var(--blue); color: white; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0; }
+    .step-row { display: flex; gap: 16px; margin-bottom: 24px; }
+    .step-content h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+    .step-content p { font-size: 14.5px; color: var(--text2); line-height: 1.6; }
+    
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body style="overflow-y: auto; background: var(--bg);">
+  <header class="header">
+    <div class="header-inner">
+      <a href="index.html" class="logo" style="text-decoration:none;">
+        <div class="logo-mark">
+          <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 13L6 8L9 11L12 6L16 10" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="16" cy="10" r="1.5" fill="white"/>
+          </svg>
+        </div>
+        <span class="logo-text">MBA ROI Calculator</span>
+      </a>
+      <div class="header-sep"></div>
+      <a href="index.html" style="text-decoration:none; color:var(--text2); font-weight:500; font-size:14px;">← Back to App</a>
+    </div>
+  </header>
+
+  <main class="guide-main">
+    <h1 class="guide-title">How to Use This App</h1>
+    <p class="guide-sub">A quick guide to understanding what this tool does and how to get the most out of it.</p>
+
+    <div class="guide-card">
+      <div class="guide-h2">🤔 What is this app?</div>
+      <p class="guide-text">The <strong>MBA ROI Calculator</strong> is an interactive financial modeling tool built for prospective and current MBA students.</p>
+      <p class="guide-text">An MBA is a massive financial investment involving high tuition fees, expensive loans, and 2 years of lost income. This tool factors in all of these elements—alongside compound interest, inflation, and post-MBA salaries—to show you <strong>exactly when your degree pays for itself</strong> and what your net worth will look like 10 years into the future.</p>
+    </div>
+
+    <div class="guide-card">
+      <div class="guide-h2">📝 Step-by-Step Instructions</div>
+      
+      <div class="step-row">
+        <div class="step-badge">1</div>
+        <div class="step-content">
+          <h3>Enter your MBA Costs & Funding</h3>
+          <p>Start by inputting your total fees and the loan amount you plan to take. The app will automatically calculate the simple interest accrued during your 2-year study period to determine your starting loan balance at graduation.</p>
+        </div>
+      </div>
+
+      <div class="step-row">
+        <div class="step-badge">2</div>
+        <div class="step-content">
+          <h3>Log your Pre-MBA Wealth</h3>
+          <p>Enter any existing investments or cash savings you have right now. The model assumes you will use this money to cover your monthly living expenses during the MBA period while you aren't earning a salary.</p>
+        </div>
+      </div>
+
+      <div class="step-row">
+        <div class="step-badge">3</div>
+        <div class="step-content">
+          <h3>Set Market Assumptions</h3>
+          <p>Define what kind of return you expect your investments to generate (MF Return %) and how fast you expect your lifestyle expenses to grow each year (Expense Growth % - known as lifestyle inflation).</p>
+        </div>
+      </div>
+
+      <div class="step-row">
+        <div class="step-badge">4</div>
+        <div class="step-content">
+          <h3>Build Career Trajectories</h3>
+          <p>This is the most important step! You can build 3 different potential career outcomes (e.g., Conservative, Moderate, Aggressive). For each one, enter your expected starting CTC, the post-tax in-hand percentage, and how fast you expect your salary to grow annually.</p>
+        </div>
+      </div>
+      
+      <div class="step-row">
+        <div class="step-badge">5</div>
+        <div class="step-content">
+          <h3>Analyze the Outcomes</h3>
+          <p>As you type, the charts will update in real-time. Look closely at the <strong>Break-Even Year</strong> metric in the output cards—this is the exact year your post-MBA net worth permanently surpasses what your wealth would have been if you never did the MBA!</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="guide-card">
+      <div class="guide-h2">💡 Pro Tips</div>
+      <p class="guide-text"><strong>Live URL Sharing:</strong> Everything you type is instantly saved to the URL. If you build a specific financial scenario that you want to share with a friend or study group, just click the "🔗 Copy link" button and send it to them!</p>
+      <p class="guide-text"><strong>Exporting Data:</strong> If you're a spreadsheet nerd, you can click the "📊 Export CSV" button above the metric cards to download the raw 13-year month-by-month financial data to analyze in Excel.</p>
+    </div>
+  </main>
+</body>
+</html>
