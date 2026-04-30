@@ -5,10 +5,10 @@ function calcEMI(principal, annualRatePct, months) {
 }
 
 function simulateBaseline(inputs) {
-  const { currentInvL, cashL, mfReturnPct, expGrowthPct, startYear, baseCTC, baseInhand, baseGrowth, baseExpL } = inputs;
+  const { currentInvL, cashL, mfReturnPct, expGrowthPct, startYear, baseCTC, baseInhand, baseGrowth, baseExpL, simYears } = inputs;
   
   const ir = mfReturnPct / 100 / 12;
-  const SIM_YEARS = 13;
+  const SIM_YEARS = simYears || 13;
   const SIM_MONTHS = SIM_YEARS * 12;
 
   let corpus = currentInvL + cashL;
@@ -57,7 +57,7 @@ function simulate(inputs, scenario, baseline) {
   const n = repayYears * 12;
   const emi = calcEMI(loanAtRepay, loanRatePct, n);
   const mbaTotalMonths = mbaDuration * 12;
-  const SIM_YEARS = 13;
+  const SIM_YEARS = inputs.simYears || 13;
   const SIM_MONTHS = SIM_YEARS * 12;
 
   let corpus = currentInvL + cashL - Math.max(0, totalFeesL - loanL);

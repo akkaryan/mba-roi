@@ -135,6 +135,7 @@ function getInputs() {
     baseInhand:   num('baseInhand'),
     baseGrowth:   num('baseGrowth'),
     baseExpL:     num('baseExp'),
+    simYears:     Math.max(5, num('simYears') || 13),
   };
 }
 
@@ -232,7 +233,7 @@ function renderWealthChart(results, labels) {
         return g;
       },
       fill: true,
-      borderWidth: 2.5, pointRadius: ctx => [0, getInputs().mbaDuration, 12].includes(ctx.dataIndex) ? 4 : 2,
+      borderWidth: 2.5, pointRadius: ctx => [0, getInputs().mbaDuration, getInputs().simYears].includes(ctx.dataIndex) ? 4 : 2,
       pointBackgroundColor: r.color, cubicInterpolationMode: 'monotone', order: 1
     })),
     {
@@ -391,7 +392,7 @@ function setScen(i) {
   document.getElementById('flowScenLabel').textContent = getScenarios()[i].label;
   document.getElementById('flowScenLabel').textContent = getScenarios()[i].label;
   if (lastResults) {
-    const labels = getLabels(new Date().getFullYear(), 14);
+    const labels = getLabels(new Date().getFullYear(), lastResults[0].nwArr.length);
     renderFlowChart(lastResults, labels);
     updateBlurb(lastResults);
   }
@@ -508,7 +509,7 @@ function render() {
   const inputs = getInputs();
   const scenarios = getScenarios();
   const baseline = simulateBaseline(inputs);
-  const labels = getLabels(inputs.startYear, 14);
+  const labels = getLabels(inputs.startYear, inputs.simYears + 1);
   const results = scenarios.map(s => simulate(inputs, s, baseline));
   
   lastResults = results;
@@ -520,6 +521,9 @@ function render() {
   renderMetrics(results);
   updateBlurb(results);
   checkRealityChecks(inputs, scenarios);
+  
+  const oTitle = document.getElementById('outcomesTitle');
+  if (oTitle) oTitle.innerText = `Financial Outcomes (${inputs.simYears} Year Projection)`;
 
   // On mobile, pulse the Results tab when user is still on Inputs tab
   if (window.innerWidth <= 900) {

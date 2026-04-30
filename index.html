@@ -162,12 +162,17 @@
               <input type="number" id="repayYears" min="1" max="15" step="1" placeholder="7" inputmode="numeric">
             </div>
           </div>
-          <div class="field">
-            <label>Expense growth (% p.a.)</label>
-            <input type="number" id="expGrowth" min="0" max="15" step="0.5" placeholder="6" inputmode="decimal">
-            <span class="field-hint">Lifestyle inflation applied to all scenarios</span>
+          <div class="field-row">
+            <div class="field">
+              <label>Expense growth (% p.a.)</label>
+              <input type="number" id="expGrowth" min="0" max="15" step="0.5" placeholder="6" inputmode="decimal">
+              <span class="field-hint">Lifestyle inflation applied to all scenarios</span>
+            </div>
+            <div class="field">
+              <label>Projection (years) <span class="info-btn" data-tip="Number of years to project the charts">ⓘ</span></label>
+              <input type="number" id="simYears" min="5" max="40" step="1" placeholder="13" value="13" inputmode="numeric">
+            </div>
           </div>
-        </div>
       </div>
     </div>
 
@@ -306,7 +311,7 @@
 
     <!-- Metric Cards -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-      <div class="chart-title" style="margin-bottom: 0;">Financial Outcomes (13 Year Projection)</div>
+      <div id="outcomesTitle" class="chart-title" style="margin-bottom: 0;">Financial Outcomes</div>
       <button onclick="downloadCSV()" style="background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:6px 12px; font-size:12px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px; color:var(--text); transition: all 0.2s;" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='var(--surface2)'">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
         Export CSV
