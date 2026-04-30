@@ -242,15 +242,40 @@ function renderWealthChart(results, labels) {
       borderWidth: 2, pointRadius: 2, pointBackgroundColor: '#EF4444', cubicInterpolationMode: 'monotone', order: 1
     }
   ];
-  if (wChart) wChart.destroy();
-  wChart = new Chart(document.getElementById('wealthChart'), {
-    type: 'line',
-    data: { labels, datasets },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      interaction: { mode: 'index', intersect: false },
+  if (wChart) {
+    datasets.forEach((ds, i) => {
+      const meta = wChart.getDatasetMeta(i);
+      if (meta && meta.hidden !== null) ds.hidden = meta.hidden;
+    });
+    wChart.data.labels = labels;
+    wChart.data.datasets = datasets;
+    wChart.options.scales.x.ticks.color = tc;
+    wChart.options.scales.y.ticks.color = tc;
+    wChart.options.scales.x.grid.color = gc;
+    wChart.options.scales.y.grid.color = gc;
+    wChart.options.plugins.legend.labels.color = tc;
+    wChart.update();
+  } else {
+    wChart = new Chart(document.getElementById('wealthChart'), {
+      type: 'line',
+      data: { labels, datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: { display: false },
+        legend: {
+          display: true,
+          position: 'top',
+          align: 'start',
+          labels: {
+            color: tc,
+            usePointStyle: true,
+            boxWidth: 8,
+            boxHeight: 8,
+            font: { size: 11, family: 'Inter' },
+            padding: 16
+          }
+        },
         tooltip: { ...tt, 
           enabled: window.innerWidth >= 768,
           external: window.innerWidth < 768 ? externalTooltipHandler : undefined,
@@ -266,6 +291,7 @@ function renderWealthChart(results, labels) {
     },
     plugins: [shadePl]
   });
+  }
 }
 
 function renderFlowChart(results, labels) {
@@ -277,16 +303,41 @@ function renderFlowChart(results, labels) {
     { label: 'Loan EMI',        data: r.emiA, borderColor: '#D97706', backgroundColor: 'transparent', borderWidth: 2.5, pointRadius: 2, pointBackgroundColor: '#D97706', cubicInterpolationMode: 'monotone' },
     { label: 'Net savings → MF',data: r.savA, borderColor: '#2563EB', backgroundColor: 'transparent', borderWidth: 2.5, pointRadius: 2, pointBackgroundColor: '#2563EB', cubicInterpolationMode: 'monotone' },
   ];
-  if (fChart) fChart.destroy();
-  fChart = new Chart(document.getElementById('flowChart'), {
-    type: 'line',
-    data: { labels, datasets },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      interaction: { mode: 'index', intersect: false },
-      plugins: {
-        legend: { display: false },
-        tooltip: { ...tt, 
+  if (fChart) {
+    datasets.forEach((ds, i) => {
+      const meta = fChart.getDatasetMeta(i);
+      if (meta && meta.hidden !== null) ds.hidden = meta.hidden;
+    });
+    fChart.data.labels = labels;
+    fChart.data.datasets = datasets;
+    fChart.options.scales.x.ticks.color = tc;
+    fChart.options.scales.y.ticks.color = tc;
+    fChart.options.scales.x.grid.color = gc;
+    fChart.options.scales.y.grid.color = gc;
+    fChart.options.plugins.legend.labels.color = tc;
+    fChart.update();
+  } else {
+    fChart = new Chart(document.getElementById('flowChart'), {
+      type: 'line',
+      data: { labels, datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+            align: 'start',
+            labels: {
+              color: tc,
+              usePointStyle: true,
+              boxWidth: 8,
+              boxHeight: 8,
+              font: { size: 11, family: 'Inter' },
+              padding: 16
+            }
+          },
+          tooltip: { ...tt, 
           enabled: window.innerWidth >= 768,
           external: window.innerWidth < 768 ? externalTooltipHandler : undefined,
           callbacks: {
@@ -297,10 +348,10 @@ function renderFlowChart(results, labels) {
       scales: {
         x: { ticks: { color: tc, font: { size: 11 }, maxRotation: 0 }, grid: { color: gc }, border: { display: false } },
         y: { ticks: { color: tc, font: { size: 11 }, callback: v => '₹' + fmt(v) + 'L' }, grid: { color: gc }, border: { display: false } }
-      }
     },
     plugins: [shadePl]
   });
+  }
 }
 
 function renderOppChart(results, baseline, labels) {
@@ -312,16 +363,41 @@ function renderOppChart(results, baseline, labels) {
     label: baseline.label, data: baseline.nwArr, borderColor: '#6B7280', borderDash: [5, 5], backgroundColor: 'transparent', borderWidth: 2.5, pointRadius: 2, pointBackgroundColor: '#6B7280', cubicInterpolationMode: 'monotone'
   });
 
-  if (oChart) oChart.destroy();
-  oChart = new Chart(document.getElementById('oppChart'), {
-    type: 'line',
-    data: { labels, datasets },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      interaction: { mode: 'index', intersect: false },
-      plugins: {
-        legend: { display: false },
-        tooltip: { ...tt, 
+  if (oChart) {
+    datasets.forEach((ds, i) => {
+      const meta = oChart.getDatasetMeta(i);
+      if (meta && meta.hidden !== null) ds.hidden = meta.hidden;
+    });
+    oChart.data.labels = labels;
+    oChart.data.datasets = datasets;
+    oChart.options.scales.x.ticks.color = tc;
+    oChart.options.scales.y.ticks.color = tc;
+    oChart.options.scales.x.grid.color = gc;
+    oChart.options.scales.y.grid.color = gc;
+    oChart.options.plugins.legend.labels.color = tc;
+    oChart.update();
+  } else {
+    oChart = new Chart(document.getElementById('oppChart'), {
+      type: 'line',
+      data: { labels, datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+            align: 'start',
+            labels: {
+              color: tc,
+              usePointStyle: true,
+              boxWidth: 8,
+              boxHeight: 8,
+              font: { size: 11, family: 'Inter' },
+              padding: 16
+            }
+          },
+          tooltip: { ...tt, 
           enabled: window.innerWidth >= 768,
           external: window.innerWidth < 768 ? function(c) {
             c.chart.canvas.id = 'oppChart'; // Hack to reuse externalTooltipHandler logic
@@ -339,6 +415,7 @@ function renderOppChart(results, baseline, labels) {
     },
     plugins: [shadePl]
   });
+  }
 }
 
 function renderMetrics(results) {
