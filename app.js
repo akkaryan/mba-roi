@@ -166,6 +166,36 @@ const shadePl = {
   }
 };
 
+function externalTooltipHandler(context) {
+  const {chart, tooltip} = context;
+  const isFlow = chart.canvas.id === 'flowChart';
+  const panel = document.getElementById(isFlow ? 'flowHoverPanel' : 'wealthHoverPanel');
+
+  if (tooltip.opacity === 0) {
+    panel.style.display = 'none';
+    return;
+  }
+
+  panel.style.display = 'grid';
+
+  const titleLines = tooltip.title || [];
+  const bodyLines = tooltip.body.map(b => b.lines);
+
+  let html = `<div class="hover-panel-title">Year ${titleLines[0] || ''}</div>`;
+  
+  bodyLines.forEach((body, i) => {
+    const colors = tooltip.labelColors[i];
+    html += `
+      <div class="hover-panel-item">
+        <span class="hover-panel-color" style="background:${colors.backgroundColor}; border: 1px solid ${colors.borderColor}"></span>
+        <span>${body}</span>
+      </div>
+    `;
+  });
+
+  panel.innerHTML = html;
+}
+
 function renderWealthChart(results, labels) {
   const { gc, tc, tt } = cDef();
   const datasets = [
@@ -200,9 +230,12 @@ function renderWealthChart(results, labels) {
       interaction: { mode: 'index', intersect: false },
       plugins: {
         legend: { display: false },
-        tooltip: { ...tt, callbacks: {
+        tooltip: { ...tt, 
+          enabled: window.innerWidth >= 768,
+          external: window.innerWidth < 768 ? externalTooltipHandler : undefined,
+          callbacks: {
           title: a => String(a[0].label),
-          label: c => ` ${c.dataset.label}: ₹${fmt(c.parsed.y)}L`
+          label: c => ` ${c.dataset.label.replace('Net worth · ', '')}: ₹${fmt(c.parsed.y)}L`
         }}
       },
       scales: {
@@ -232,7 +265,10 @@ function renderFlowChart(results, labels) {
       interaction: { mode: 'index', intersect: false },
       plugins: {
         legend: { display: false },
-        tooltip: { ...tt, callbacks: {
+        tooltip: { ...tt, 
+          enabled: window.innerWidth >= 768,
+          external: window.innerWidth < 768 ? externalTooltipHandler : undefined,
+          callbacks: {
           title: a => String(a[0].label),
           label: c => ` ${c.dataset.label}: ₹${fmt(c.parsed.y)}L/yr`
         }}

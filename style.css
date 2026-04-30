@@ -479,4 +479,38 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
   #onboardingBanner > div:first-child {
     display: none; /* Hide wave emoji to save vertical space */
   }
+  
+  .hover-panel {
+    display: none;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    animation: fadeUp 0.2s ease-out;
+  }
+  .hover-panel-title {
+    grid-column: 1 / -1;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+  .hover-panel-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .hover-panel-color {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
 }
