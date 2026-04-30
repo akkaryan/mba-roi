@@ -53,7 +53,19 @@ function simulate(inputs, scenario, baseline) {
 
   const MR = loanRatePct / 100 / 12;
   const ir = mfReturnPct / 100 / 12;
-  const loanAtRepay = loanL * (1 + (loanRatePct / 100) * mbaDuration);
+  
+  let loanAtRepay = 0;
+  if (mbaDuration <= 1) {
+    loanAtRepay = loanL * (1 + (loanRatePct / 100) * mbaDuration);
+  } else {
+    const years = Math.ceil(mbaDuration);
+    const tranche = loanL / years;
+    for (let y = 1; y <= years; y++) {
+      const yearsOfInterest = years - y + 1;
+      loanAtRepay += tranche * (1 + (loanRatePct / 100) * yearsOfInterest);
+    }
+  }
+  
   const n = repayYears * 12;
   const emi = calcEMI(loanAtRepay, loanRatePct, n);
   const mbaTotalMonths = mbaDuration * 12;

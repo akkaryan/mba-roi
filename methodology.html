@@ -57,8 +57,8 @@
       <div class="meth-h2"><span>🎓</span> Phase 1: During the MBA</div>
       <p class="meth-text">The model simulates your financial state for the duration of your study period. During this time, it is assumed you earn zero salary and rely on your pre-MBA investments.</p>
       <ul class="meth-ul">
-        <li><strong>Loan Accrual:</strong> Your loan principal is drawn down evenly over the course duration. Simple interest is accrued on the entire loan amount during the study period to determine your starting balance at graduation.
-        <div class="formula">Loan at Graduation = Principal × (1 + Interest Rate × Duration in Years)</div>
+        <li><strong>Staggered Loan Accrual:</strong> To accurately reflect real-world B-school disbursements, the model assumes the loan is taken in equal annual tranches at the start of each academic year. Simple interest is accrued on these individual tranches until graduation.
+        <div class="formula">Graduation Balance = Σ [Tranche × (1 + Rate × Years Remaining)]</div>
         </li>
         <li><strong>Living Expenses:</strong> Monthly expenses are deducted directly from your existing investment corpus (Stocks, Cash).</li>
         <li><strong>Corpus Compounding:</strong> Your remaining investments continue to compound monthly at your expected <span class="highlight">MF Return</span> rate.</li>
