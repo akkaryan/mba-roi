@@ -303,15 +303,13 @@ function renderFlowChart(results, labels) {
 }
 
 function renderOppChart(results, baseline, labels) {
-  const r = results[activeScen];
   const { gc, tc, tt } = cDef();
-  const datasets = [
-    { label: r.label, data: r.nwArr, borderColor: r.color, backgroundColor: 'transparent', borderWidth: 2.5, pointRadius: 2, pointBackgroundColor: r.color, cubicInterpolationMode: 'monotone' },
-    { label: baseline.label, data: baseline.nwArr, borderColor: '#6B7280', borderDash: [5, 5], backgroundColor: 'transparent', borderWidth: 2.5, pointRadius: 2, pointBackgroundColor: '#6B7280', cubicInterpolationMode: 'monotone' }
-  ];
-  
-  document.getElementById('oppLegLine').style.background = r.color;
-  document.getElementById('oppLegText').innerText = r.label + ' NW';
+  const datasets = results.map(r => ({
+    label: r.label, data: r.nwArr, borderColor: r.color, backgroundColor: 'transparent', borderWidth: 2.5, pointRadius: 2, pointBackgroundColor: r.color, cubicInterpolationMode: 'monotone'
+  }));
+  datasets.push({
+    label: baseline.label, data: baseline.nwArr, borderColor: '#6B7280', borderDash: [5, 5], backgroundColor: 'transparent', borderWidth: 2.5, pointRadius: 2, pointBackgroundColor: '#6B7280', cubicInterpolationMode: 'monotone'
+  });
 
   if (oChart) oChart.destroy();
   oChart = new Chart(document.getElementById('oppChart'), {
@@ -391,12 +389,39 @@ function setScen(i) {
     btn.style.background = j === i ? (SCENARIO_DEFAULTS[j].color + '12') : '';
   });
   document.getElementById('flowScenLabel').textContent = getScenarios()[i].label;
-  document.getElementById('oppScenLabel').textContent = getScenarios()[i].label;
+  document.getElementById('flowScenLabel').textContent = getScenarios()[i].label;
   if (lastResults) {
     const labels = getLabels(new Date().getFullYear(), 14);
     renderFlowChart(lastResults, labels);
-    if (lastBaseline) renderOppChart(lastResults, lastBaseline, labels);
   }
+}
+
+function calculateTargetCTC(inputs, baseline) {
+  const targetYearIdx = inputs.mbaDuration + inputs.repayYears;
+  const targetYearNum = inputs.startYear + targetYearIdx;
+  
+  let low = 0;
+  let high = 200;
+  let bestCTC = null;
+  
+  const proxyScenario = {
+    label: 'Target', inhandPct: 70, salaryGrowthPct: 10, baseExpL: 0.8, color: '#000', corpColor: '#000'
+  };
+
+  for (let i = 0; i < 20; i++) {
+    const mid = (low + high) / 2;
+    proxyScenario.startingCTC = mid;
+    const res = simulate(inputs, proxyScenario, baseline);
+    
+    if (res.breakEvenYear && res.breakEvenYear <= targetYearNum) {
+      bestCTC = mid;
+      high = mid;
+    } else {
+      low = mid;
+    }
+  }
+  
+  return { ctc: bestCTC ? Math.round(bestCTC * 10) / 10 : null, year: targetYearNum };
 }
 
 function updateBlurb(results) {
@@ -412,6 +437,16 @@ function updateBlurb(results) {
   if (minBE !== '—' && minBE !== maxBE) beStr = `between <strong>${minBE}</strong> and <strong>${maxBE}</strong>`;
   else if (minBE !== '—') beStr = `in <strong>${minBE}</strong>`;
   else beStr = `never`;
+
+  const inputs = getInputs();
+  const target = calculateTargetCTC(inputs, lastBaseline);
+  const tEl = document.getElementById('targetCtcBlurb');
+  if (tEl && target.ctc) {
+    tEl.innerHTML = `🎯 <strong>Target CTC:</strong> To mathematically beat your Opportunity Cost by the time your loan is repaid (${target.year}), you need a starting post-MBA CTC of approx <strong>₹${target.ctc}L</strong> <em>(assuming 10% annual salary growth)</em>.`;
+    tEl.style.display = 'block';
+  } else if (tEl) {
+    tEl.style.display = 'none';
+  }
 
   const gap = best.corp10yr - worst.corp10yr;
   const gapStr = gap > 0 ? ` Over 10 years, the difference between your <em>${worst.label}</em> and <em>${best.label}</em> trajectory creates a wealth gap of <strong>₹${fmt(gap)}L</strong>.` : '';
