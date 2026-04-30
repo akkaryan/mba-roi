@@ -112,7 +112,7 @@ function getInputs() {
     cashL:        num('cashSavings'),
     mbaMonthlyL:  num('mbaMonthly') / 100,
     mfReturnPct:  num('mfReturn'),
-    repayYears:   num('repayYears'),
+    repayYears:   Math.max(0.1, num('repayYears')),
     expGrowthPct: num('expGrowth'),
     startYear:    new Date().getFullYear(),
   };
@@ -370,6 +370,33 @@ window.showTab = function(idx, btn) {
   document.querySelectorAll('.sc-panel').forEach((p, i) => p.classList.toggle('active', i === idx));
 };
 
+const shownToasts = new Set();
+function showToast(id, msg) {
+  if (shownToasts.has(id)) return;
+  shownToasts.add(id);
+  
+  const container = document.getElementById('toastContainer');
+  if (!container) return;
+  
+  const toast = document.createElement('div');
+  toast.className = 'toast-msg';
+  toast.innerHTML = msg;
+  container.appendChild(toast);
+  
+  setTimeout(() => toast.classList.add('show'), 50);
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 5000);
+}
+
+function checkRealityChecks(inputs, scenarios) {
+  if (inputs.mfReturnPct > 18) showToast('mf', 'Are you Warren Buffett or just highly optimistic? 🤡');
+  if (inputs.mbaMonthlyL > 1.5 || inputs.totalFeesL > 120) showToast('exp', 'That is an aggressive amount of avocado toast. 🥑');
+  if (inputs.loanL > 50) showToast('loan', 'Debt trap incoming. Pray for a big signing bonus. 🏦');
+  if (scenarios.some(s => s.startingCTC > 75)) showToast('mbb', 'MBB Partner track detected. Calm down, Elon. 📈');
+}
+
 function render() {
   const inputs = getInputs();
   const scenarios = getScenarios();
@@ -380,6 +407,7 @@ function render() {
   renderFlowChart(results, labels);
   renderMetrics(results);
   updateBlurb(results);
+  checkRealityChecks(inputs, scenarios);
 
   // On mobile, pulse the Results tab when user is still on Inputs tab
   if (window.innerWidth <= 900) {
