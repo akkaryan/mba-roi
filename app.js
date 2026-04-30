@@ -393,10 +393,11 @@ function setScen(i) {
   if (lastResults) {
     const labels = getLabels(new Date().getFullYear(), 14);
     renderFlowChart(lastResults, labels);
+    updateBlurb(lastResults);
   }
 }
 
-function calculateTargetCTC(inputs, baseline) {
+function calculateTargetCTC(inputs, baseline, activeScenData) {
   const targetYearIdx = inputs.mbaDuration + inputs.repayYears;
   const targetYearNum = inputs.startYear + targetYearIdx;
   
@@ -405,7 +406,8 @@ function calculateTargetCTC(inputs, baseline) {
   let bestCTC = null;
   
   const proxyScenario = {
-    label: 'Target', inhandPct: 70, salaryGrowthPct: 10, baseExpL: 0.8, color: '#000', corpColor: '#000'
+    ...activeScenData,
+    label: 'Target', color: '#000', corpColor: '#000'
   };
 
   for (let i = 0; i < 20; i++) {
@@ -439,10 +441,15 @@ function updateBlurb(results) {
   else beStr = `never`;
 
   const inputs = getInputs();
-  const target = calculateTargetCTC(inputs, lastBaseline);
+  const scenarios = getScenarios();
+  const activeScenData = scenarios[activeScen];
+  
+  const target = calculateTargetCTC(inputs, lastBaseline, activeScenData);
   const tEl = document.getElementById('targetCtcBlurb');
   if (tEl && target.ctc) {
-    tEl.innerHTML = `🎯 <strong>Target CTC:</strong> To mathematically beat your Opportunity Cost by the time your loan is repaid (${target.year}), you need a starting post-MBA CTC of approx <strong>₹${target.ctc}L</strong> <em>(assuming 10% annual salary growth)</em>.`;
+    const breakEvens = results.map(r => r.breakEvenYear ? `<strong>${r.label}</strong> in ${r.breakEvenYear}` : `<strong>${r.label}</strong> never`).join(', ');
+    
+    tEl.innerHTML = `🎯 <strong>Target CTC (${activeScenData.label} Assumptions):</strong> To mathematically beat your Opportunity Cost by the time your loan is repaid (${target.year}), you need a starting post-MBA CTC of approx <strong>₹${target.ctc}L</strong> <em>(assuming ${activeScenData.salaryGrowthPct}% annual salary growth and ${activeScenData.inhandPct}% in-hand)</em>.<br><br>📊 <strong>Your Inputs:</strong> Based on the salaries you entered, you will beat the opportunity cost with ${breakEvens}.`;
     tEl.style.display = 'block';
   } else if (tEl) {
     tEl.style.display = 'none';
