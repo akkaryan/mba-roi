@@ -111,11 +111,43 @@
       </div>
     </div>
 
+    <!-- Opportunity Cost -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#FCE7F3;">💼</div>
+        <span class="card-title">3. Current Job (Opportunity Cost)</span>
+      </div>
+      <div class="card-body">
+        <div class="field-group">
+          <div class="field-row">
+            <div class="field">
+              <label>Current CTC (₹L)</label>
+              <input type="number" id="baseCTC" min="0" max="200" step="1" placeholder="15" inputmode="decimal">
+            </div>
+            <div class="field">
+              <label>In-hand (%)</label>
+              <input type="number" id="baseInhand" min="50" max="100" step="1" placeholder="75" inputmode="decimal">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Salary Growth (% p.a.)</label>
+              <input type="number" id="baseGrowth" min="0" max="50" step="1" placeholder="8" inputmode="decimal">
+            </div>
+            <div class="field">
+              <label>Monthly Spend (₹L)</label>
+              <input type="number" id="baseExp" min="0" max="5" step="0.01" placeholder="0.5" inputmode="decimal">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Shared Assumptions -->
     <div class="card">
       <div class="card-header">
         <div class="card-icon" style="background:#F5F3FF;">⚙️</div>
-        <span class="card-title">3. Market Assumptions</span>
+        <span class="card-title">4. Market Assumptions</span>
       </div>
       <div class="card-body">
         <div class="field-group">
@@ -143,7 +175,7 @@
     <div class="card">
       <div class="card-header">
         <div class="card-icon" style="background:#FFF7ED;">📊</div>
-        <span class="card-title">4. Career Trajectories <span class="info-btn" data-tip="Create 3 different career trajectories (e.g., conservative, realistic, optimistic) to compare how your salary growth affects your wealth">ⓘ</span></span>
+        <span class="card-title">5. Career Trajectories <span class="info-btn" data-tip="Create 3 different career trajectories (e.g., conservative, realistic, optimistic) to compare how your salary growth affects your wealth">ⓘ</span></span>
       </div>
       <div class="sc-tabs">
         <button class="sc-tab active" onclick="showTab(0, this)" style="border-bottom-color:#2563EB;color:#2563EB;background:#EFF6FF;">Scenario 1</button>
@@ -296,6 +328,24 @@
       <div id="wealthHoverPanel" class="hover-panel"></div>
       <div class="chart-wrap" style="height:380px;">
         <canvas id="wealthChart" role="img" aria-label="Investment corpus and net worth trajectory across three scenarios over 13 years.">Net worth and corpus projection chart from current year to 13 years ahead.</canvas>
+      </div>
+    </div>
+
+    <!-- Opportunity Cost Chart -->
+    <div class="chart-card">
+      <div class="flow-header">
+        <div>
+          <div class="chart-title">Opportunity Cost — <span id="oppScenLabel">Scenario 1</span> vs Baseline</div>
+          <div class="chart-sub">Comparing MBA Net Worth vs No-MBA (Staying at Current Job)</div>
+        </div>
+      </div>
+      <div class="chart-legend">
+        <span class="leg"><span class="leg-line" style="background:#2563EB;" id="oppLegLine"></span><span id="oppLegText">MBA NW</span></span>
+        <span class="leg"><span class="leg-line" style="background:#6B7280; border-top-style: dashed;"></span>No MBA (Baseline)</span>
+      </div>
+      <div id="oppHoverPanel" class="hover-panel"></div>
+      <div class="chart-wrap" style="height:300px;">
+        <canvas id="oppChart" role="img" aria-label="Opportunity cost comparison between MBA and Baseline scenarios.">Opportunity cost chart.</canvas>
       </div>
     </div>
 

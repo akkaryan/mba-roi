@@ -4,7 +4,7 @@ const SCENARIO_DEFAULTS = [
   { label: 'Aggressive',   startingCTC: 50, inhandPct: 74, salaryGrowthPct: 12, baseExpL: 0.090, color: '#7C3AED', corpColor: '#C4B5FD' },
 ];
 
-let wChart = null, fChart = null, activeScen = 0, lastResults = null;
+let wChart = null, fChart = null, oChart = null, activeScen = 0, lastResults = null, lastBaseline = null;
 
 function num(id) { return parseFloat(document.getElementById(id).value) || 0; }
 function str(id) { return document.getElementById(id).value.trim(); }
@@ -75,6 +75,22 @@ function downloadCSV() {
     }
   });
 
+  if (lastBaseline) {
+    for(let i = 0; i < lastBaseline.nwArr.length; i++) {
+      const year = startYear + i;
+      const scen = lastBaseline.label;
+      const sal = lastBaseline.salA[i];
+      const exp = lastBaseline.expA[i];
+      const emi = 0; // No MBA loan in baseline
+      const sav = lastBaseline.savA[i];
+      const loan = 0;
+      const corp = lastBaseline.corpArr[i];
+      const nw = lastBaseline.nwArr[i];
+      
+      csv += `${year},${scen},${sal},${exp},${emi},${sav},${loan},${corp},${nw}\n`;
+    }
+  }
+
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -115,6 +131,10 @@ function getInputs() {
     repayYears:   Math.max(0.1, num('repayYears')),
     expGrowthPct: num('expGrowth'),
     startYear:    new Date().getFullYear(),
+    baseCTC:      num('baseCTC'),
+    baseInhand:   num('baseInhand'),
+    baseGrowth:   num('baseGrowth'),
+    baseExpL:     num('baseExp'),
   };
 }
 
@@ -282,6 +302,46 @@ function renderFlowChart(results, labels) {
   });
 }
 
+function renderOppChart(results, baseline, labels) {
+  const r = results[activeScen];
+  const { gc, tc, tt } = cDef();
+  const datasets = [
+    { label: r.label, data: r.nwArr, borderColor: r.color, backgroundColor: 'transparent', borderWidth: 2.5, pointRadius: 2, pointBackgroundColor: r.color, cubicInterpolationMode: 'monotone' },
+    { label: baseline.label, data: baseline.nwArr, borderColor: '#6B7280', borderDash: [5, 5], backgroundColor: 'transparent', borderWidth: 2.5, pointRadius: 2, pointBackgroundColor: '#6B7280', cubicInterpolationMode: 'monotone' }
+  ];
+  
+  document.getElementById('oppLegLine').style.background = r.color;
+  document.getElementById('oppLegText').innerText = r.label + ' NW';
+
+  if (oChart) oChart.destroy();
+  oChart = new Chart(document.getElementById('oppChart'), {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: { ...tt, 
+          enabled: window.innerWidth >= 768,
+          external: window.innerWidth < 768 ? function(c) {
+            c.chart.canvas.id = 'oppChart'; // Hack to reuse externalTooltipHandler logic
+            externalTooltipHandler(c, 'oppHoverPanel');
+          } : undefined,
+          callbacks: {
+          title: a => String(a[0].label),
+          label: c => ` ${c.dataset.label}: ₹${fmt(c.parsed.y)}L`
+        }}
+      },
+      scales: {
+        x: { ticks: { color: tc, font: { size: 11 }, maxRotation: 0 }, grid: { color: gc }, border: { display: false } },
+        y: { ticks: { color: tc, font: { size: 11 }, callback: v => '₹' + fmt(v) + 'L' }, grid: { color: gc }, border: { display: false } }
+      }
+    },
+    plugins: [shadePl]
+  });
+}
+
 function renderMetrics(results) {
   const el = document.getElementById('metricCards');
   const COLORS = ['#2563EB', '#059669', '#7C3AED'];
@@ -309,7 +369,7 @@ function renderMetrics(results) {
           <span class="mc-val">${r.cleared}</span>
         </div>
         <div class="mc-item" style="background: var(--surface2); padding: 8px; border-radius: 6px; border: 1px solid var(--border);">
-          <span class="mc-key" style="color: var(--text); font-weight: 600;">Break-even <span class="info-btn" data-tip="Year when your net worth fully recovers to your pre-MBA starting wealth">ⓘ</span></span>
+          <span class="mc-key" style="color: var(--text); font-weight: 600;">Break-even <span class="info-btn" data-tip="Year when your MBA net worth surpasses what you would have earned staying at your current job">ⓘ</span></span>
           <span class="mc-val" style="color: var(--accent); font-weight: 700;">${r.breakEvenYear || '—'}</span>
         </div>
         <div class="mc-item">
@@ -331,7 +391,12 @@ function setScen(i) {
     btn.style.background = j === i ? (SCENARIO_DEFAULTS[j].color + '12') : '';
   });
   document.getElementById('flowScenLabel').textContent = getScenarios()[i].label;
-  if (lastResults) renderFlowChart(lastResults, getLabels(new Date().getFullYear(), 14));
+  document.getElementById('oppScenLabel').textContent = getScenarios()[i].label;
+  if (lastResults) {
+    const labels = getLabels(new Date().getFullYear(), 14);
+    renderFlowChart(lastResults, labels);
+    if (lastBaseline) renderOppChart(lastResults, lastBaseline, labels);
+  }
 }
 
 function updateBlurb(results) {
@@ -351,7 +416,7 @@ function updateBlurb(results) {
   const gap = best.corp10yr - worst.corp10yr;
   const gapStr = gap > 0 ? ` Over 10 years, the difference between your <em>${worst.label}</em> and <em>${best.label}</em> trajectory creates a wealth gap of <strong>₹${fmt(gap)}L</strong>.` : '';
 
-  const html = `💡 <strong>Chart Insights:</strong> The red line shows your loan balance. Your net worth drops negative during the MBA, but crosses back to positive (break-even) ${beStr}.${gapStr}`;
+  const html = `💡 <strong>Chart Insights:</strong> The red line shows your loan balance. Your true ROI break-even point (when your MBA wealth surpasses your Current Job trajectory) happens ${beStr}.${gapStr}`;
   
   const el = document.getElementById('dynamicBlurb');
   if (el) {
@@ -400,10 +465,15 @@ function checkRealityChecks(inputs, scenarios) {
 function render() {
   const inputs = getInputs();
   const scenarios = getScenarios();
+  const baseline = simulateBaseline(inputs);
   const labels = getLabels(inputs.startYear, 14);
-  const results = scenarios.map(s => simulate(inputs, s));
+  const results = scenarios.map(s => simulate(inputs, s, baseline));
+  
   lastResults = results;
+  lastBaseline = baseline;
+  
   renderWealthChart(results, labels);
+  renderOppChart(results, baseline, labels);
   renderFlowChart(results, labels);
   renderMetrics(results);
   updateBlurb(results);

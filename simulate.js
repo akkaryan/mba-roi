@@ -4,7 +4,44 @@ function calcEMI(principal, annualRatePct, months) {
   return principal * mr * Math.pow(1 + mr, months) / (Math.pow(1 + mr, months) - 1);
 }
 
-function simulate(inputs, scenario) {
+function simulateBaseline(inputs) {
+  const { currentInvL, cashL, mfReturnPct, expGrowthPct, startYear, baseCTC, baseInhand, baseGrowth, baseExpL } = inputs;
+  
+  const ir = mfReturnPct / 100 / 12;
+  const SIM_YEARS = 13;
+  const SIM_MONTHS = SIM_YEARS * 12;
+
+  let corpus = currentInvL + cashL;
+  const nwArr = [], corpArr = [], salA = [], expA = [], savA = [];
+  const R = v => Math.round(v * 10) / 10;
+
+  nwArr.push(R(corpus));
+  corpArr.push(R(corpus));
+  salA.push(0); expA.push(0); savA.push(0);
+
+  let aSal = 0, aExp = 0, aSav = 0;
+
+  for (let m = 1; m <= SIM_MONTHS; m++) {
+    const yW = Math.floor((m - 1) / 12);
+    const inhand = (baseCTC * baseInhand / 100 / 12) * Math.pow(1 + baseGrowth / 100, yW);
+    const monthlyExp = baseExpL * Math.pow(1 + expGrowthPct / 100, yW);
+    const sav = inhand - monthlyExp;
+    
+    corpus = corpus * (1 + ir) + sav;
+    aSal += inhand; aExp += monthlyExp; aSav += sav;
+
+    if (m % 12 === 0) {
+      nwArr.push(R(corpus));
+      corpArr.push(R(corpus));
+      salA.push(R(aSal)); expA.push(R(aExp)); savA.push(R(aSav));
+      aSal = 0; aExp = 0; aSav = 0;
+    }
+  }
+
+  return { label: 'No MBA Baseline', color: '#6B7280', nwArr, corpArr, salA, expA, savA };
+}
+
+function simulate(inputs, scenario, baseline) {
   const {
     totalFeesL, loanL, loanRatePct, mbaDuration,
     currentInvL, cashL, mbaMonthlyL,
@@ -73,8 +110,13 @@ function simulate(inputs, scenario) {
     }
   }
 
-  const startNW = nwArr[0];
-  const breakEvenIdx = nwArr.findIndex((v, i) => i > 0 && v >= startNW);
+  let breakEvenIdx = -1;
+  if (baseline) {
+    breakEvenIdx = nwArr.findIndex((v, i) => i > 0 && v >= baseline.nwArr[i]);
+  } else {
+    const startNW = nwArr[0];
+    breakEvenIdx = nwArr.findIndex((v, i) => i > 0 && v >= startNW);
+  }
 
   return {
     label, color, corpColor,
