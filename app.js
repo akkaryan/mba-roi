@@ -142,7 +142,12 @@ function cDef() {
       titleColor:      d ? '#F9FAFB' : '#111827',
       bodyColor:       d ? 'rgba(249,250,251,0.7)' : 'rgba(17,24,39,0.65)',
       borderColor:     d ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
-      borderWidth: 1, padding: 10, cornerRadius: 8,
+      borderWidth: 1, 
+      padding: window.innerWidth < 600 ? 8 : 10, 
+      cornerRadius: 8,
+      bodyFont: { size: window.innerWidth < 600 ? 11 : 12 },
+      titleFont: { size: window.innerWidth < 600 ? 12 : 13 },
+      boxPadding: 4
     }
   };
 }
@@ -201,7 +206,7 @@ function renderWealthChart(results, labels) {
         }}
       },
       scales: {
-        x: { ticks: { color: tc, font: { size: 11 }, autoSkip: false, maxRotation: 0 }, grid: { color: gc }, border: { display: false } },
+        x: { ticks: { color: tc, font: { size: 11 }, maxRotation: 0 }, grid: { color: gc }, border: { display: false } },
         y: { ticks: { color: tc, font: { size: 11 }, callback: v => '₹' + fmt(v) + 'L' }, grid: { color: gc }, border: { display: false } }
       }
     },
@@ -233,7 +238,7 @@ function renderFlowChart(results, labels) {
         }}
       },
       scales: {
-        x: { ticks: { color: tc, font: { size: 11 }, autoSkip: false, maxRotation: 0 }, grid: { color: gc }, border: { display: false } },
+        x: { ticks: { color: tc, font: { size: 11 }, maxRotation: 0 }, grid: { color: gc }, border: { display: false } },
         y: { ticks: { color: tc, font: { size: 11 }, callback: v => '₹' + fmt(v) + 'L' }, grid: { color: gc }, border: { display: false } }
       }
     },
